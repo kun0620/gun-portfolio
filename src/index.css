@@ -1,0 +1,9 @@
+@import "tailwindcss";
+
+:root {
+  --teal: #1D9E75;
+}
+
+html {
+  scroll-behavior: smooth;
+}
