@@ -1,0 +1,7 @@
+{
+  "tool_name": "Read",
+  "tool_input_preview": "{\"file_path\":\"C:\\\\Users\\\\ktmis010\\\\gun-portfolio\\\\src\"}",
+  "error": "EISDIR: illegal operation on a directory, read 'C:\\Users\\ktmis010\\gun-portfolio\\src'",
+  "timestamp": "2026-04-23T03:06:53.571Z",
+  "retry_count": 1
+}

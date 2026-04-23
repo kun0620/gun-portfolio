@@ -3,7 +3,7 @@ import { supabase } from '../lib/supabase'
 
 function ProjectCard({ project }) {
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden flex flex-col hover:shadow-md transition-shadow">
+    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden flex flex-col hover:shadow-lg hover:scale-105 transition-all duration-300">
       {project.image_url && (
         <img src={project.image_url} alt={project.title} className="w-full h-44 object-cover" />
       )}
@@ -13,7 +13,7 @@ function ProjectCard({ project }) {
         {project.tags?.length > 0 && (
           <div className="flex flex-wrap gap-2 mb-4">
             {project.tags.map(tag => (
-              <span key={tag} className="px-2 py-0.5 text-xs rounded-full bg-[#1D9E75]/10 text-[#1D9E75] font-medium">
+              <span key={tag} className="px-2 py-0.5 text-xs rounded-full bg-[var(--accent)]/10 text-[var(--accent)] font-medium">
                 {tag}
               </span>
             ))}
@@ -22,7 +22,7 @@ function ProjectCard({ project }) {
         <div className="flex gap-3 text-sm">
           {project.live_url && (
             <a href={project.live_url} target="_blank" rel="noreferrer"
-              className="text-[#1D9E75] font-medium hover:underline">Live ↗</a>
+              className="text-[var(--accent)] font-medium hover:underline">Live ↗</a>
           )}
           {project.github_url && (
             <a href={project.github_url} target="_blank" rel="noreferrer"

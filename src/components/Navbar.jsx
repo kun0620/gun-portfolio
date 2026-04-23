@@ -13,13 +13,13 @@ export default function Navbar() {
   return (
     <nav className="fixed top-0 inset-x-0 z-50 bg-white/90 backdrop-blur border-b border-gray-100">
       <div className="max-w-5xl mx-auto px-4 flex items-center justify-between h-14">
-        <a href="#hero" className="font-bold text-lg text-[#1D9E75]">Gun.</a>
+        <a href="#hero" className="font-bold text-lg accent-link">Gun.</a>
 
         {/* Desktop */}
         <ul className="hidden md:flex gap-6 text-sm font-medium text-gray-600">
           {links.map(l => (
             <li key={l.href}>
-              <a href={l.href} className="hover:text-[#1D9E75] transition-colors">{l.label}</a>
+              <a href={l.href} className="accent-link transition-colors">{l.label}</a>
             </li>
           ))}
         </ul>

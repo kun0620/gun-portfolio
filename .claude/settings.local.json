@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm create *)",
+      "Bash(npx create-vite@latest . --template react)",
+      "Read(//c/Users/ktmis010/**)",
+      "Bash(rtk npx *)",
+      "Bash(npm install *)",
+      "Bash(rtk read *)",
+      "Bash(rtk ls *)",
+      "Bash(rtk npm *)",
+      "Bash(rtk git commit -m ' *)",
+      "Bash(rtk gh *)",
+      "mcp__plugin_oh-my-claudecode_t__state_clear",
+      "mcp__plugin_oh-my-claudecode_t__state_list_active",
+      "Bash(rtk grep *)",
+      "mcp__de8af6b6-3090-4546-a2fa-1bf978229dd1__list_projects",
+      "mcp__de8af6b6-3090-4546-a2fa-1bf978229dd1__apply_migration",
+      "mcp__de8af6b6-3090-4546-a2fa-1bf978229dd1__execute_sql"
+    ]
+  }
+}
