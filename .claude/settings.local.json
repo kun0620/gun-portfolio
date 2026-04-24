@@ -16,7 +16,9 @@
       "Bash(rtk grep *)",
       "mcp__de8af6b6-3090-4546-a2fa-1bf978229dd1__list_projects",
       "mcp__de8af6b6-3090-4546-a2fa-1bf978229dd1__apply_migration",
-      "mcp__de8af6b6-3090-4546-a2fa-1bf978229dd1__execute_sql"
+      "mcp__de8af6b6-3090-4546-a2fa-1bf978229dd1__execute_sql",
+      "Bash(rtk find *)",
+      "Bash(npm list *)"
     ]
   }
 }

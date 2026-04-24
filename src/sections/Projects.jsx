@@ -1,11 +1,19 @@
 import { useEffect, useState } from 'react'
+import { motion } from 'framer-motion'
 import { supabase } from '../lib/supabase'
+import { useScrollReveal } from '../hooks/useScrollReveal'
+import { SkeletonCards } from '../components/Skeleton'
+import { fadeUp, staggerContainer } from '../lib/animations'
 
 function ProjectCard({ project }) {
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden flex flex-col hover:shadow-lg hover:scale-105 transition-all duration-300">
+    <motion.div
+      variants={fadeUp}
+      className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden flex flex-col"
+      whileHover={{ y: -4, boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)' }}
+    >
       {project.image_url && (
-        <img src={project.image_url} alt={project.title} className="w-full h-44 object-cover" />
+        <img src={project.image_url} alt={project.title} className="w-full h-44 object-cover" loading="lazy" />
       )}
       <div className="p-5 flex flex-col flex-1">
         <h3 className="font-semibold text-gray-900 text-lg mb-2">{project.title}</h3>
@@ -30,15 +38,20 @@ function ProjectCard({ project }) {
           )}
         </div>
       </div>
-    </div>
+    </motion.div>
   )
 }
 
 export default function Projects() {
   const [projects, setProjects] = useState([])
+  const [loading, setLoading] = useState(true)
+  const { ref, isInView } = useScrollReveal()
 
   useEffect(() => {
-    supabase.from('projects').select('*').order('display_order').then(({ data }) => setProjects(data ?? []))
+    supabase.from('projects').select('*').order('display_order').then(({ data }) => {
+      setProjects(data ?? [])
+      setLoading(false)
+    })
   }, [])
 
   return (
@@ -46,13 +59,17 @@ export default function Projects() {
       <div className="max-w-5xl mx-auto">
         <h2 className="text-3xl font-bold text-gray-900 mb-2 text-center">Projects</h2>
         <p className="text-gray-500 text-center mb-12">Things I've built</p>
-        {projects.length === 0 ? (
-          <p className="text-center text-gray-400">No projects yet.</p>
-        ) : (
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {projects.map(p => <ProjectCard key={p.id} project={p} />)}
-          </div>
-        )}
+        <motion.div ref={ref} variants={staggerContainer} initial="hidden" animate={isInView ? "visible" : "hidden"}>
+          {loading ? (
+            <SkeletonCards count={3} />
+          ) : projects.length === 0 ? (
+            <p className="text-center text-gray-400">No projects yet.</p>
+          ) : (
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {projects.map(p => <ProjectCard key={p.id} project={p} />)}
+            </div>
+          )}
+        </motion.div>
       </div>
     </section>
   )

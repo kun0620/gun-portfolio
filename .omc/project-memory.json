@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "lastScanned": 1776917341779,
+  "lastScanned": 1777021662318,
   "projectRoot": "C:\\Users\\ktmis010\\gun-portfolio",
   "techStack": {
     "languages": [
@@ -46,7 +46,7 @@
   },
   "conventions": {
     "namingStyle": null,
-    "importStyle": null,
+    "importStyle": "ES modules",
     "testPattern": null,
     "fileOrganization": "type-based"
   },
@@ -67,7 +67,7 @@
       "path": "dist",
       "purpose": "Distribution/build output",
       "fileCount": 1,
-      "lastAccessed": 1776917341724,
+      "lastAccessed": 1777021662251,
       "keyFiles": [
         "index.html"
       ]
@@ -75,10 +75,11 @@
     "src": {
       "path": "src",
       "purpose": "Source code",
-      "fileCount": 3,
-      "lastAccessed": 1776917341747,
+      "fileCount": 4,
+      "lastAccessed": 1777021662252,
       "keyFiles": [
         "App.jsx",
+        "i18n.js",
         "index.css",
         "main.jsx"
       ]
@@ -87,44 +88,46 @@
       "path": "supabase",
       "purpose": null,
       "fileCount": 0,
-      "lastAccessed": 1776917341749,
+      "lastAccessed": 1777021662283,
       "keyFiles": []
     },
     "dist\\assets": {
       "path": "dist\\assets",
       "purpose": "Static assets",
       "fileCount": 2,
-      "lastAccessed": 1776917341750,
+      "lastAccessed": 1777021662285,
       "keyFiles": [
-        "index-C9gT40yN.js",
-        "index-CifnST_s.css"
+        "index-cOSimwF0.js",
+        "index-DJdcvYSF.css"
       ]
     },
     "src\\components": {
       "path": "src\\components",
       "purpose": "UI components",
-      "fileCount": 3,
-      "lastAccessed": 1776917341751,
+      "fileCount": 8,
+      "lastAccessed": 1777021662286,
       "keyFiles": [
+        "CustomizePanel.jsx",
         "Footer.jsx",
-        "Navbar.jsx",
-        "ProtectedRoute.jsx"
+        "Hero.jsx"
       ]
     },
     "src\\lib": {
       "path": "src\\lib",
       "purpose": "Library code",
-      "fileCount": 1,
-      "lastAccessed": 1776917341752,
+      "fileCount": 3,
+      "lastAccessed": 1777021662287,
       "keyFiles": [
-        "supabase.js"
+        "animations.js",
+        "supabase.js",
+        "utils.js"
       ]
     },
     "src\\pages": {
       "path": "src\\pages",
       "purpose": "Page components",
       "fileCount": 1,
-      "lastAccessed": 1776917341752,
+      "lastAccessed": 1777021662287,
       "keyFiles": [
         "Home.jsx"
       ]
@@ -132,66 +135,140 @@
     "supabase\\migrations": {
       "path": "supabase\\migrations",
       "purpose": "Database migrations",
-      "fileCount": 1,
-      "lastAccessed": 1776917341753,
+      "fileCount": 3,
+      "lastAccessed": 1777021662288,
       "keyFiles": [
-        "001_init.sql"
+        "001_init.sql",
+        "002_customize.sql",
+        "003_seed_data.sql"
       ]
     }
   },
   "hotPaths": [
     {
       "path": "src\\pages\\admin\\AdminDashboard.jsx",
-      "accessCount": 10,
-      "lastAccessed": 1776917555778,
-      "type": "file"
-    },
-    {
-      "path": "src\\pages\\Home.jsx",
-      "accessCount": 4,
-      "lastAccessed": 1776917593621,
-      "type": "file"
-    },
-    {
-      "path": "src\\index.css",
-      "accessCount": 4,
-      "lastAccessed": 1776917676925,
+      "accessCount": 11,
+      "lastAccessed": 1776935510717,
       "type": "file"
     },
     {
       "path": "src\\sections\\Hero.jsx",
-      "accessCount": 3,
-      "lastAccessed": 1776917634582,
+      "accessCount": 10,
+      "lastAccessed": 1776997119814,
+      "type": "file"
+    },
+    {
+      "path": "src\\index.css",
+      "accessCount": 9,
+      "lastAccessed": 1777000514112,
       "type": "file"
     },
     {
       "path": "src\\components\\Navbar.jsx",
-      "accessCount": 3,
-      "lastAccessed": 1776917672100,
+      "accessCount": 8,
+      "lastAccessed": 1777019016028,
       "type": "file"
     },
     {
-      "path": "src\\main.jsx",
-      "accessCount": 2,
-      "lastAccessed": 1776917582082,
+      "path": "src\\App.jsx",
+      "accessCount": 8,
+      "lastAccessed": 1777021753796,
       "type": "file"
     },
     {
       "path": "src\\components\\Footer.jsx",
-      "accessCount": 2,
-      "lastAccessed": 1776917618199,
+      "accessCount": 7,
+      "lastAccessed": 1777018966359,
+      "type": "file"
+    },
+    {
+      "path": "src\\pages\\Home.jsx",
+      "accessCount": 6,
+      "lastAccessed": 1776997119673,
       "type": "file"
     },
     {
       "path": "src\\sections\\Projects.jsx",
-      "accessCount": 2,
-      "lastAccessed": 1776917646982,
+      "accessCount": 6,
+      "lastAccessed": 1776997119878,
+      "type": "file"
+    },
+    {
+      "path": "src\\components\\Sections.jsx",
+      "accessCount": 5,
+      "lastAccessed": 1777021765237,
+      "type": "file"
+    },
+    {
+      "path": "src\\sections\\Skills.jsx",
+      "accessCount": 4,
+      "lastAccessed": 1776997120143,
+      "type": "file"
+    },
+    {
+      "path": "src\\sections\\Contact.jsx",
+      "accessCount": 4,
+      "lastAccessed": 1776997120327,
+      "type": "file"
+    },
+    {
+      "path": "src\\main.jsx",
+      "accessCount": 4,
+      "lastAccessed": 1777000468958,
+      "type": "file"
+    },
+    {
+      "path": "package.json",
+      "accessCount": 4,
+      "lastAccessed": 1777019219462,
+      "type": "file"
+    },
+    {
+      "path": "src\\lib\\animations.js",
+      "accessCount": 3,
+      "lastAccessed": 1776997125058,
+      "type": "file"
+    },
+    {
+      "path": "vite.config.js",
+      "accessCount": 3,
+      "lastAccessed": 1777000467613,
       "type": "file"
     },
     {
       "path": "supabase\\migrations\\002_customize.sql",
-      "accessCount": 1,
-      "lastAccessed": 1776917348554,
+      "accessCount": 2,
+      "lastAccessed": 1776997120577,
+      "type": "file"
+    },
+    {
+      "path": "supabase\\migrations\\003_seed_data.sql",
+      "accessCount": 2,
+      "lastAccessed": 1776997125361,
+      "type": "file"
+    },
+    {
+      "path": "index.html",
+      "accessCount": 2,
+      "lastAccessed": 1777000466287,
+      "type": "file"
+    },
+    {
+      "path": "src\\components\\Hero.jsx",
+      "accessCount": 2,
+      "lastAccessed": 1777019869241,
+      "type": "file"
+    },
+    {
+      "path": "src\\locales\\en.js",
+      "accessCount": 2,
+      "lastAccessed": 1777020615643,
+      "type": "file"
+    },
+    {
+      "path": "src\\locales\\th.js",
+      "accessCount": 2,
+      "lastAccessed": 1777020658517,
       "type": "file"
     },
     {
@@ -201,9 +278,81 @@
       "type": "file"
     },
     {
-      "path": "supabase\\migrations\\003_seed_data.sql",
+      "path": "src\\hooks\\useScrollReveal.js",
       "accessCount": 1,
-      "lastAccessed": 1776917655334,
+      "lastAccessed": 1776935993684,
+      "type": "file"
+    },
+    {
+      "path": "src\\components\\Skeleton.jsx",
+      "accessCount": 1,
+      "lastAccessed": 1776936194809,
+      "type": "file"
+    },
+    {
+      "path": "supabase\\migrations\\001_init.sql",
+      "accessCount": 1,
+      "lastAccessed": 1776997120508,
+      "type": "file"
+    },
+    {
+      "path": "src\\lib\\supabase.js",
+      "accessCount": 1,
+      "lastAccessed": 1776997124760,
+      "type": "file"
+    },
+    {
+      "path": "src\\i18n.js",
+      "accessCount": 1,
+      "lastAccessed": 1777000450708,
+      "type": "file"
+    },
+    {
+      "path": "src\\lib\\utils.js",
+      "accessCount": 1,
+      "lastAccessed": 1777000607143,
+      "type": "file"
+    },
+    {
+      "path": "src\\components\\Topology.jsx",
+      "accessCount": 1,
+      "lastAccessed": 1777019036340,
+      "type": "file"
+    },
+    {
+      "path": "src\\components\\CustomizePanel.jsx",
+      "accessCount": 1,
+      "lastAccessed": 1777019068023,
+      "type": "file"
+    },
+    {
+      "path": ".claude\\launch.json",
+      "accessCount": 1,
+      "lastAccessed": 1777019634274,
+      "type": "file"
+    },
+    {
+      "path": "src\\components",
+      "accessCount": 1,
+      "lastAccessed": 1777019874288,
+      "type": "directory"
+    },
+    {
+      "path": "src\\hooks\\useProfile.js",
+      "accessCount": 1,
+      "lastAccessed": 1777021933921,
+      "type": "file"
+    },
+    {
+      "path": "src\\hooks\\useProjects.js",
+      "accessCount": 1,
+      "lastAccessed": 1777021936116,
+      "type": "file"
+    },
+    {
+      "path": "src\\hooks\\useExperience.js",
+      "accessCount": 1,
+      "lastAccessed": 1777021938029,
       "type": "file"
     }
   ],
