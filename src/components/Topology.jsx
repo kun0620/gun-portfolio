@@ -6,13 +6,17 @@ export default function Topology() {
   useEffect(() => {
     const canvas = ref.current;
     if (!canvas) return;
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (prefersReducedMotion) return;
+
     const ctx = canvas.getContext('2d');
-    let W = 0, H = 0, DPR = Math.min(2, window.devicePixelRatio || 1);
+    let W = 0, H = 0, DPR = Math.min(1.25, window.devicePixelRatio || 1);
     const NODES = [];
     const PACKETS = [];
     const N_COUNT = 54;
     const LINK_DIST = 160;
     let rafId = 0;
+    let lastFrame = 0;
 
     const accent = () => getComputedStyle(document.documentElement).getPropertyValue('--topo-accent').trim() || '#7dd3fc';
     const accent2 = () => getComputedStyle(document.documentElement).getPropertyValue('--topo-accent2').trim() || '#a3e635';
@@ -38,7 +42,7 @@ export default function Topology() {
       PACKETS.push({ a, b, t: 0, speed: .008 + Math.random()*.012, color: Math.random() < .25 ? accent2() : accent() });
     }
     let packetTimer = 0;
-    function step() {
+    function draw() {
       ctx.clearRect(0,0,W,H);
       const ac = accent();
       for (const n of NODES) {
@@ -73,7 +77,12 @@ export default function Topology() {
         ctx.beginPath(); ctx.moveTo(tx,ty); ctx.lineTo(x,y); ctx.stroke();
         ctx.fillStyle=p.color; ctx.beginPath(); ctx.arc(x,y,1.8,0,Math.PI*2); ctx.fill();
       }
+    }
+    function step(ts = 0) {
       rafId = requestAnimationFrame(step);
+      if (document.hidden || ts - lastFrame < 1000 / 30) return;
+      lastFrame = ts;
+      draw();
     }
     resize(); init(); step();
     const onR = () => { resize(); init(); };
