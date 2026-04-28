@@ -88,14 +88,17 @@ export function useCrosshairTracker(enabled) {
 }
 
 export function useLiveStatus() {
-  const [state, setState] = useState({ ping: 14, uptime: '73d 04:12:55', deploys: 142 });
+  const startedAt = useRef(Date.now());
+  const [state, setState] = useState({ ping: 14, uptime: '0d 00:00:00', deploys: 'local' });
   useEffect(() => {
     const t = setInterval(() => {
       setState(s => {
-        const [d, hms] = s.uptime.split('d ');
-        let [hh,mm,ss] = hms.split(':').map(Number);
-        ss += 1; if (ss>=60){ss=0;mm+=1;} if(mm>=60){mm=0;hh+=1;}
-        const uptime = `${d}d ${String(hh).padStart(2,'0')}:${String(mm).padStart(2,'0')}:${String(ss).padStart(2,'0')}`;
+        const elapsed = Math.floor((Date.now() - startedAt.current) / 1000);
+        const days = Math.floor(elapsed / 86400);
+        const hh = Math.floor((elapsed % 86400) / 3600);
+        const mm = Math.floor((elapsed % 3600) / 60);
+        const ss = elapsed % 60;
+        const uptime = `${days}d ${String(hh).padStart(2,'0')}:${String(mm).padStart(2,'0')}:${String(ss).padStart(2,'0')}`;
         const ping = Math.max(8, Math.min(28, s.ping + (Math.random()*4-2)));
         return { ...s, ping: Math.round(ping), uptime };
       });

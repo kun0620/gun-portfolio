@@ -2,6 +2,7 @@ import { motion } from 'motion/react';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Typewriter } from './Navbar.jsx';
+import { useProfile } from '../hooks/useProfile.js';
 
 function SystemPanel({ t }) {
   const rows = [['NET.CORE','ok'],['NET.DIST','ok'],['NET.EDGE','ok'],['SRV.PROD','ok'],['BKUP.OFFSITE','ok'],['DNS.RESOLVE','ok'],['VPN.WG','ok']];
@@ -24,6 +25,7 @@ function SystemPanel({ t }) {
 
 export default function Hero({ tweak, onSoundClick }) {
   const { t } = useTranslation();
+  const { data: profile } = useProfile();
   const name = t('hero.name');
   const roles = t('hero.roles', { returnObjects: true });
   const [glitching, setGlitching] = useState(false);
@@ -80,6 +82,12 @@ export default function Hero({ tweak, onSoundClick }) {
       </div>
     ),
   };
+  const socials = [
+    { label: 'GitHub', href: profile?.github_url },
+    { label: 'LinkedIn', href: profile?.linkedin_url },
+    { label: 'Line', href: profile?.line_id ? `https://line.me/ti/p/~${profile.line_id}` : null },
+    { label: 'Email', href: profile?.email ? `mailto:${profile.email}` : `mailto:${t('contact.email')}` },
+  ].filter(item => item.href);
 
   return (
     <section id="top" className="relative pt-28 pb-20 lg:pt-36 lg:pb-28 content-section">
@@ -105,8 +113,8 @@ export default function Hero({ tweak, onSoundClick }) {
         </motion.div>
         <motion.div {...stagger(.75)} className="mt-14 flex items-center gap-4 font-mono text-[11px] text-[#5d6b7a]">
           <span>{'// socials'}</span><div className="h-px flex-1 bg-[#1a2330] max-w-24" />
-          {['GitHub','LinkedIn','Line','Email','WeChat'].map(s => (
-            <a key={s} href="#" onMouseEnter={onSoundClick} className="hover:text-[color:var(--accent)] link-u">{s}</a>
+          {socials.map(s => (
+            <a key={s.label} href={s.href} target={s.href.startsWith('http') ? '_blank' : undefined} rel="noopener noreferrer" onMouseEnter={onSoundClick} className="hover:text-[color:var(--accent)] link-u">{s.label}</a>
           ))}
         </motion.div>
       </div>

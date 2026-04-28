@@ -1,400 +1,473 @@
 import { useEffect, useState } from 'react'
-import { supabase } from '../../lib/supabase'
-import { useUpload } from '../../hooks/useUpload'
-import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core'
-import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from '@dnd-kit/sortable'
-import { useSortable } from '@dnd-kit/sortable'
-import { CSS } from '@dnd-kit/utilities'
+import { supabase, uploadAsset, getPublicUrl } from '../../lib/supabase.js'
 
-const TABS = ['Profile', 'Projects', 'Skills', 'Messages', 'Customize']
+const TABS = ['Profile', 'Projects', 'Experience', 'Messages']
 
-// ── SortableItem Component ───────────────────────────────────
-function SortableProjectItem({ id, title, tags, image_url, onEdit, onDelete }) {
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id })
-  const style = { transform: CSS.Transform.toString(transform), transition, opacity: isDragging ? 0.5 : 1 }
+// ── Shared components ────────────────────────────────────────────
+function Field({ label, name, value, onChange, type = 'text', rows, placeholder, required }) {
+  const cls = 'w-full bg-[#080c10] border border-[#1a2330] focus:border-[#a3e635] outline-none px-3 py-2 font-mono text-[13px] text-[#cfd6de] placeholder:text-[#3d4956] transition-colors'
   return (
-    <div ref={setNodeRef} style={style} {...attributes} {...listeners}
-      className="flex items-center justify-between bg-white border border-gray-100 rounded-xl px-4 py-3 cursor-grab active:cursor-grabbing">
-      <div className="flex gap-3 flex-1">
-        {image_url && <img src={image_url} alt={title} className="w-12 h-12 rounded object-cover" />}
-        <div>
-          <p className="font-medium text-gray-800 text-sm">{title}</p>
-          <p className="text-xs text-gray-400">{tags?.join(', ')}</p>
-        </div>
+    <label className="block">
+      <span className="block font-mono text-[10px] text-[#5d6b7a] uppercase tracking-wider mb-1">{label}</span>
+      {rows
+        ? <textarea name={name} value={value} onChange={onChange} rows={rows} required={required} placeholder={placeholder} className={cls + ' resize-none'} />
+        : <input name={name} type={type} value={value} onChange={onChange} required={required} placeholder={placeholder} className={cls} />}
+    </label>
+  )
+}
+
+function UploadRow({ label, folder, fieldKey, accept = 'image/*', value, onUploaded }) {
+  const [uploading, setUploading] = useState(false)
+  const [error, setError] = useState(null)
+  async function handleChange(e) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setUploading(true); setError(null)
+    try { onUploaded(await uploadAsset(folder, file)) }
+    catch (err) { setError(err.message || 'Upload failed') }
+    finally { setUploading(false) }
+  }
+  return (
+    <div>
+      <span className="block font-mono text-[10px] text-[#5d6b7a] uppercase tracking-wider mb-1">{label}</span>
+      <div className="flex items-center gap-3">
+        <label className="flex-1 border border-[#1a2330] hover:border-[#a3e635] px-3 py-2 cursor-pointer transition-colors">
+          <span className="font-mono text-[12px] text-[#9aa7b4]">
+            {uploading ? 'uploading...' : value ? '✓ uploaded — change file' : 'choose file →'}
+          </span>
+          <input type="file" accept={accept} onChange={handleChange} className="hidden" disabled={uploading} />
+        </label>
+        {value && <a href={getPublicUrl(value)} target="_blank" rel="noopener noreferrer" className="font-mono text-[11px] text-[#a3e635] hover:underline shrink-0">view ↗</a>}
       </div>
-      <div className="flex gap-2">
-        <button onClick={onEdit} className="text-xs text-[#1D9E75] font-medium hover:underline">Edit</button>
-        <button onClick={onDelete} className="text-xs text-red-400 font-medium hover:underline">Delete</button>
+      {error && <p className="mt-1.5 font-mono text-[11px] text-[#ff6b6b]">[error] {error}</p>}
+    </div>
+  )
+}
+
+function SaveBtn({ saving, saved }) {
+  return (
+    <button type="submit" disabled={saving}
+      className="h-9 px-6 font-mono text-[12px] font-bold bg-[#a3e635] text-[#080c10] hover:bg-white transition-colors disabled:opacity-40">
+      {saving ? 'saving...' : saved ? '✓ saved' : 'save →'}
+    </button>
+  )
+}
+
+function Alert({ children }) {
+  if (!children) return null
+  return <p className="font-mono text-[11px] text-[#ff6b6b]">[error] {children}</p>
+}
+
+function ConfirmDialog({ title, body, onCancel, onConfirm, busy }) {
+  return (
+    <div className="fixed inset-0 z-[80] bg-[#080c10]/85 backdrop-blur-sm flex items-center justify-center p-6">
+      <div className="w-full max-w-sm border border-[#2a3545] bg-[#0a0e12] p-5">
+        <div className="font-mono text-[11px] text-[#a3e635] mb-2">// confirm</div>
+        <h2 className="text-[#e8eef5] text-lg font-semibold">{title}</h2>
+        <p className="mt-2 text-[13px] text-[#9aa7b4] leading-relaxed">{body}</p>
+        <div className="mt-5 flex justify-end gap-2">
+          <button type="button" onClick={onCancel} disabled={busy} className="h-9 px-4 font-mono text-[12px] border border-[#2a3545] text-[#9aa7b4] hover:text-[#cfd6de] disabled:opacity-40">cancel</button>
+          <button type="button" onClick={onConfirm} disabled={busy} className="h-9 px-4 font-mono text-[12px] border border-[#ff6b6b] text-[#ff6b6b] hover:bg-[#ff6b6b] hover:text-[#080c10] disabled:opacity-40">
+            {busy ? 'deleting...' : 'delete'}
+          </button>
+        </div>
       </div>
     </div>
   )
 }
 
-// ── Profile Tab ──────────────────────────────────────────────
+// ── Profile Tab ──────────────────────────────────────────────────
+const PROFILE_DEFAULTS = {
+  tagline_en: '', tagline_th: '',
+  bio_en: '', bio_th: '',
+  stat_1_value: '5+', stat_1_label_en: 'Years in factory IT', stat_1_label_th: 'ปีในสายงาน IT โรงงาน',
+  stat_2_value: '2', stat_2_label_en: 'Manufacturing companies', stat_2_label_th: 'บริษัทอุตสาหกรรม',
+  stat_3_value: '3.75', stat_3_label_en: 'GPA — top of class', stat_3_label_th: 'เกรดเฉลี่ย',
+  email: '', phone: '', location_en: '', location_th: '',
+  github_url: '', linkedin_url: '', line_id: '',
+  photo_url: '', cv_url: '', wechat_qr_url: '',
+}
+
 function ProfileTab() {
-  const [form, setForm] = useState({ hero_title: '', hero_subtitle: '', about_text: '', avatar_url: '' })
-  const [profileId, setProfileId] = useState(null)
+  const [form, setForm] = useState(PROFILE_DEFAULTS)
+  const [pid, setPid] = useState(null)
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
-  const { upload, loading: uploading } = useUpload()
+  const [error, setError] = useState(null)
 
   useEffect(() => {
-    supabase.from('profile').select('*').single().then(({ data }) => {
-      if (data) { setProfileId(data.id); setForm({ hero_title: data.hero_title ?? '', hero_subtitle: data.hero_subtitle ?? '', about_text: data.about_text ?? '', avatar_url: data.avatar_url ?? '' }) }
+    supabase.from('profile').select('*').limit(1).single().then(({ data, error }) => {
+      if (error && error.code !== 'PGRST116') setError(error.message)
+      if (!data) return
+      setPid(data.id)
+      setForm({ ...PROFILE_DEFAULTS, ...data,
+        bio_en: Array.isArray(data.bio_en) ? data.bio_en.join('\n\n') : (data.bio_en ?? ''),
+        bio_th: Array.isArray(data.bio_th) ? data.bio_th.join('\n\n') : (data.bio_th ?? ''),
+      })
     })
   }, [])
 
-  function handleChange(e) { setForm(prev => ({ ...prev, [e.target.name]: e.target.value })) }
-
-  async function handleAvatarUpload(e) {
-    const file = e.target.files?.[0]
-    if (file) {
-      const url = await upload(file, 'avatars')
-      if (url) setForm(prev => ({ ...prev, avatar_url: url }))
-    }
-  }
+  const set = k => e => setForm(f => ({ ...f, [k]: e.target.value }))
+  const setVal = (k, v) => setForm(f => ({ ...f, [k]: v }))
 
   async function handleSave(e) {
-    e.preventDefault(); setSaving(true); setSaved(false)
-    await supabase.from('profile').upsert({ id: profileId ?? undefined, ...form, updated_at: new Date().toISOString() })
-    setSaving(false); setSaved(true); setTimeout(() => setSaved(false), 2000)
+    e.preventDefault(); setSaving(true); setSaved(false); setError(null)
+    const payload = { ...form,
+      bio_en: form.bio_en.split(/\n\n+/).map(p => p.trim()).filter(Boolean),
+      bio_th: form.bio_th.split(/\n\n+/).map(p => p.trim()).filter(Boolean),
+      updated_at: new Date().toISOString(),
+    }
+    if (pid) {
+      const { error } = await supabase.from('profile').update(payload).eq('id', pid)
+      if (error) { setError(error.message); setSaving(false); return }
+    }
+    else {
+      const { data, error } = await supabase.from('profile').insert([payload]).select().single()
+      if (error) { setError(error.message); setSaving(false); return }
+      if (data) setPid(data.id)
+    }
+    setSaving(false); setSaved(true); setTimeout(() => setSaved(false), 2500)
   }
 
   return (
-    <form onSubmit={handleSave} className="max-w-lg space-y-4">
-      {[['hero_title', 'Hero Title', 'input'], ['hero_subtitle', 'Hero Subtitle', 'input'], ['about_text', 'About Text', 'textarea']].map(([name, label, type]) => (
-        <div key={name}>
-          <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>
-          {type === 'textarea' ? (
-            <textarea name={name} value={form[name]} onChange={handleChange} rows={4}
-              className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#1D9E75]/50 focus:border-[#1D9E75] resize-none" />
-          ) : (
-            <input name={name} value={form[name]} onChange={handleChange}
-              className="w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[#1D9E75]/50 focus:border-[#1D9E75]" />
-          )}
+    <form onSubmit={handleSave} className="space-y-6 max-w-2xl">
+      <Block title="tagline">
+        <Field label="Tagline EN" value={form.tagline_en} onChange={set('tagline_en')} />
+        <Field label="Tagline TH" value={form.tagline_th} onChange={set('tagline_th')} />
+      </Block>
+      <Block title="bio (แยกย่อหน้าด้วยบรรทัดว่าง)">
+        <Field label="Bio EN" value={form.bio_en} onChange={set('bio_en')} rows={5} />
+        <Field label="Bio TH" value={form.bio_th} onChange={set('bio_th')} rows={5} />
+      </Block>
+      <Block title="stats">
+        {[1, 2, 3].map(n => (
+          <div key={n} className="grid grid-cols-3 gap-3">
+            <Field label={`Stat ${n} Value`} value={form[`stat_${n}_value`]} onChange={set(`stat_${n}_value`)} />
+            <Field label="Label EN" value={form[`stat_${n}_label_en`]} onChange={set(`stat_${n}_label_en`)} />
+            <Field label="Label TH" value={form[`stat_${n}_label_th`]} onChange={set(`stat_${n}_label_th`)} />
+          </div>
+        ))}
+      </Block>
+      <Block title="contact info">
+        <div className="grid grid-cols-2 gap-4">
+          <Field label="Email" value={form.email} onChange={set('email')} type="email" />
+          <Field label="Phone" value={form.phone} onChange={set('phone')} />
+          <Field label="Location EN" value={form.location_en} onChange={set('location_en')} />
+          <Field label="Location TH" value={form.location_th} onChange={set('location_th')} />
         </div>
-      ))}
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Avatar Image</label>
-        <div className="flex gap-3 items-center">
-          <input type="file" accept="image/*" onChange={handleAvatarUpload} disabled={uploading}
-            className="flex-1 border border-gray-200 rounded-lg px-4 py-2.5 text-sm cursor-pointer file:mr-2 file:px-3 file:py-1 file:bg-[#1D9E75] file:text-white file:rounded file:border-0" />
-          {form.avatar_url && <img src={form.avatar_url} alt="Avatar" className="w-12 h-12 rounded-lg object-cover" />}
-        </div>
-      </div>
-      <button type="submit" disabled={saving}
-        className="px-6 py-2.5 rounded-lg bg-[#1D9E75] text-white text-sm font-semibold hover:bg-[#179060] transition-colors disabled:opacity-60">
-        {saving ? 'Saving…' : saved ? 'Saved ✓' : 'Save Profile'}
-      </button>
+      </Block>
+      <Block title="social links">
+        <Field label="GitHub URL (e.g. https://github.com/gun-eng)" value={form.github_url} onChange={set('github_url')} placeholder="https://github.com/..." />
+        <Field label="LinkedIn URL (e.g. https://linkedin.com/in/gun-eng)" value={form.linkedin_url} onChange={set('linkedin_url')} placeholder="https://linkedin.com/in/..." />
+        <Field label="Line ID (e.g. gun.eng)" value={form.line_id} onChange={set('line_id')} placeholder="your_line_id" />
+      </Block>
+      <Block title="assets">
+        <UploadRow label="Profile Photo" folder="profile" fieldKey="photo_url" value={form.photo_url} onUploaded={v => setVal('photo_url', v)} />
+        <UploadRow label="CV (PDF)" folder="cv" fieldKey="cv_url" accept=".pdf,application/pdf" value={form.cv_url} onUploaded={v => setVal('cv_url', v)} />
+        <UploadRow label="WeChat QR" folder="qr" fieldKey="wechat_qr_url" value={form.wechat_qr_url} onUploaded={v => setVal('wechat_qr_url', v)} />
+      </Block>
+      <Alert>{error}</Alert>
+      <SaveBtn saving={saving} saved={saved} />
     </form>
   )
 }
 
-// ── Projects Tab ─────────────────────────────────────────────
-const EMPTY_PROJECT = { title: '', description: '', tags: '', live_url: '', github_url: '', image_url: '', display_order: 0 }
+// ── Projects Tab ──────────────────────────────────────────────────
+const EMPTY_PROJECT = { tag: 'INFRA', name_en: '', name_th: '', sub_en: '', sub_th: '', body_en: '', body_th: '', stack: '', metrics: '', case_study_url: '', github_url: '', live_url: '', featured: false }
 
 function ProjectsTab() {
-  const [projects, setProjects] = useState([])
+  const [items, setItems] = useState([])
   const [form, setForm] = useState(EMPTY_PROJECT)
-  const [editing, setEditing] = useState(null)
-  const [loading, setLoading] = useState(false)
-  const { upload, loading: uploading } = useUpload()
-  const sensors = useSensors(useSensor(PointerSensor), useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }))
+  const [editId, setEditId] = useState(null)
+  const [saving, setSaving] = useState(false)
+  const [error, setError] = useState(null)
+  const [deleteTarget, setDeleteTarget] = useState(null)
+  const [deleting, setDeleting] = useState(false)
 
   async function load() {
-    const { data } = await supabase.from('projects').select('*').order('display_order')
-    setProjects(data ?? [])
+    const { data, error } = await supabase.from('projects').select('*').order('display_order')
+    if (error) { setError(error.message); return }
+    setItems(data ?? [])
   }
   useEffect(() => { load() }, [])
 
-  async function handleDragEnd(event) {
-    const { active, over } = event
-    if (!over || active.id === over.id) return
-    const oldIndex = projects.findIndex(p => p.id === active.id)
-    const newIndex = projects.findIndex(p => p.id === over.id)
-    const newOrder = arrayMove(projects, oldIndex, newIndex)
-    setProjects(newOrder)
-    await Promise.all(newOrder.map((p, i) => supabase.from('projects').update({ display_order: i }).eq('id', p.id)))
-  }
-
-  function handleChange(e) { setForm(prev => ({ ...prev, [e.target.name]: e.target.value })) }
+  const set = k => e => setForm(f => ({ ...f, [k]: e.target.type === 'checkbox' ? e.target.checked : e.target.value }))
 
   function startEdit(p) {
-    setEditing(p.id)
-    setForm({ ...p, tags: Array.isArray(p.tags) ? p.tags.join(', ') : '' })
+    setEditId(p.id)
+    setForm({ ...EMPTY_PROJECT, ...p,
+      stack: Array.isArray(p.stack) ? p.stack.join(', ') : (p.stack ?? ''),
+      metrics: p.metrics ? JSON.stringify(p.metrics) : '',
+    })
   }
-
-  function cancelEdit() { setEditing(null); setForm(EMPTY_PROJECT) }
-
-  async function handleImageUpload(e) {
-    const file = e.target.files?.[0]
-    if (file) {
-      const url = await upload(file, 'projects')
-      if (url) setForm(prev => ({ ...prev, image_url: url }))
-    }
-  }
+  function cancelEdit() { setEditId(null); setForm(EMPTY_PROJECT) }
 
   async function handleSubmit(e) {
-    e.preventDefault(); setLoading(true)
-    const payload = { ...form, tags: form.tags ? form.tags.split(',').map(t => t.trim()).filter(Boolean) : [], display_order: Number(form.display_order) }
-    if (editing) {
-      await supabase.from('projects').update(payload).eq('id', editing)
-    } else {
-      await supabase.from('projects').insert([payload])
+    e.preventDefault(); setSaving(true); setError(null)
+    let metrics = null
+    try { if (form.metrics.trim()) metrics = JSON.parse(form.metrics) }
+    catch {
+      setError('Metrics must be valid JSON, for example [["users","~50"]].')
+      setSaving(false)
+      return
     }
-    setForm(EMPTY_PROJECT); setEditing(null); setLoading(false); load()
+    if (metrics && (!Array.isArray(metrics) || metrics.some(row => !Array.isArray(row) || row.length !== 2))) {
+      setError('Metrics must be an array of [label, value] pairs.')
+      setSaving(false)
+      return
+    }
+    const payload = { ...form,
+      stack: form.stack.split(',').map(s => s.trim()).filter(Boolean),
+      metrics,
+      display_order: editId ? items.find(p => p.id === editId)?.display_order ?? 0 : items.length,
+    }
+    const { error } = editId
+      ? await supabase.from('projects').update(payload).eq('id', editId)
+      : await supabase.from('projects').insert([payload])
+    if (error) { setError(error.message); setSaving(false); return }
+    cancelEdit(); setSaving(false); load()
   }
 
-  async function handleDelete(id) {
-    if (!confirm('Delete this project?')) return
-    await supabase.from('projects').delete().eq('id', id); load()
+  async function handleDelete() {
+    if (!deleteTarget) return
+    setDeleting(true); setError(null)
+    const { error } = await supabase.from('projects').delete().eq('id', deleteTarget.id)
+    setDeleting(false)
+    if (error) { setError(error.message); return }
+    setDeleteTarget(null); load()
+  }
+
+  async function move(idx, dir) {
+    const next = [...items]
+    const swap = idx + dir
+    if (swap < 0 || swap >= next.length) return
+    ;[next[idx], next[swap]] = [next[swap], next[idx]]
+    setItems(next)
+    const results = await Promise.all([
+      supabase.from('projects').update({ display_order: idx }).eq('id', next[idx].id),
+      supabase.from('projects').update({ display_order: swap }).eq('id', next[swap].id),
+    ])
+    const error = results.find(r => r.error)?.error
+    if (error) setError(error.message)
   }
 
   return (
     <div className="space-y-8">
-      <form onSubmit={handleSubmit} className="bg-gray-50 rounded-xl p-5 space-y-3 max-w-lg">
-        <h3 className="font-semibold text-gray-800">{editing ? 'Edit Project' : 'Add Project'}</h3>
-        {[['title', 'Title', 'text', true], ['description', 'Description', 'text', false], ['tags', 'Tags (comma-separated)', 'text', false], ['live_url', 'Live URL', 'url', false], ['github_url', 'GitHub URL', 'url', false], ['display_order', 'Display Order', 'number', false]].map(([name, label, type, req]) => (
-          <div key={name}>
-            <label className="block text-xs font-medium text-gray-600 mb-1">{label}</label>
-            <input name={name} type={type} value={form[name]} onChange={handleChange} required={req}
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#1D9E75]/50 focus:border-[#1D9E75]" />
-          </div>
-        ))}
-        <div>
-          <label className="block text-xs font-medium text-gray-600 mb-1">Project Image</label>
-          <div className="flex gap-2 items-center">
-            <input type="file" accept="image/*" onChange={handleImageUpload} disabled={uploading}
-              className="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-xs cursor-pointer file:mr-2 file:px-2 file:py-1 file:bg-[#1D9E75] file:text-white file:rounded file:border-0" />
-            {form.image_url && <img src={form.image_url} alt="Preview" className="w-12 h-12 rounded object-cover" />}
-          </div>
+      <form onSubmit={handleSubmit} className="border border-[#1a2330] p-6 space-y-4 max-w-2xl">
+        <div className="font-mono text-[11px] text-[#5d6b7a]">{editId ? '// edit project' : '// add project'}</div>
+        <div className="grid grid-cols-2 gap-4">
+          <label className="block">
+            <span className="block font-mono text-[10px] text-[#5d6b7a] uppercase tracking-wider mb-1">Tag</span>
+            <select value={form.tag} onChange={set('tag')} className="w-full bg-[#080c10] border border-[#1a2330] focus:border-[#a3e635] outline-none px-3 py-2 font-mono text-[13px] text-[#cfd6de]">
+              <option>INFRA</option><option>WEB</option>
+            </select>
+          </label>
+          <label className="flex items-center gap-3 pt-5">
+            <input type="checkbox" checked={form.featured} onChange={set('featured')} className="w-4 h-4 accent-[#a3e635]" />
+            <span className="font-mono text-[12px] text-[#9aa7b4]">featured</span>
+          </label>
         </div>
+        <div className="grid grid-cols-2 gap-4">
+          <Field label="Name EN" value={form.name_en} onChange={set('name_en')} required />
+          <Field label="Name TH" value={form.name_th} onChange={set('name_th')} required />
+          <Field label="Sub EN" value={form.sub_en} onChange={set('sub_en')} />
+          <Field label="Sub TH" value={form.sub_th} onChange={set('sub_th')} />
+        </div>
+        <Field label="Body EN" value={form.body_en} onChange={set('body_en')} rows={3} />
+        <Field label="Body TH" value={form.body_th} onChange={set('body_th')} rows={3} />
+        <Field label='Stack (comma-separated)' value={form.stack} onChange={set('stack')} placeholder="React, Node.js, Tailwind" />
+        <Field label='Metrics (JSON) e.g. [["users","~50"],["cameras","7×5MP"]]' value={form.metrics} onChange={set('metrics')} placeholder='[["key","value"]]' />
+        <Field label="Case Study URL" value={form.case_study_url} onChange={set('case_study_url')} placeholder="https://..." />
+        <Field label="GitHub URL" value={form.github_url} onChange={set('github_url')} placeholder="https://github.com/..." />
+        <Field label="Live URL" value={form.live_url} onChange={set('live_url')} placeholder="https://..." />
+        <Alert>{error}</Alert>
         <div className="flex gap-2">
-          <button type="submit" disabled={loading}
-            className="px-5 py-2 rounded-lg bg-[#1D9E75] text-white text-sm font-semibold hover:bg-[#179060] disabled:opacity-60">
-            {loading ? 'Saving…' : editing ? 'Update' : 'Add Project'}
-          </button>
-          {editing && <button type="button" onClick={cancelEdit} className="px-5 py-2 rounded-lg border border-gray-200 text-sm text-gray-600 hover:bg-gray-100">Cancel</button>}
+          <SaveBtn saving={saving} saved={false} />
+          {editId && <button type="button" onClick={cancelEdit} className="h-9 px-5 font-mono text-[12px] border border-[#2a3545] text-[#9aa7b4] hover:border-[#a3e635] hover:text-[#cfd6de] transition-colors">cancel</button>}
         </div>
       </form>
 
-      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-        <SortableContext items={projects.map(p => p.id)} strategy={verticalListSortingStrategy}>
-          <div className="space-y-2">
-            {projects.map(p => (
-              <SortableProjectItem key={p.id} id={p.id} title={p.title} tags={p.tags} image_url={p.image_url}
-                onEdit={() => startEdit(p)} onDelete={() => handleDelete(p.id)} />
-            ))}
+      <div className="space-y-2 max-w-2xl">
+        <div className="font-mono text-[10px] text-[#5d6b7a] uppercase tracking-wider mb-3">// {items.length} projects</div>
+        {items.map((p, i) => (
+          <div key={p.id} className="flex items-center gap-3 border border-[#1a2330] bg-[#0a0e12] px-4 py-3 hover:border-[#2a3545] transition-colors">
+            <div className="flex flex-col gap-0.5">
+              <button type="button" onClick={() => move(i, -1)} disabled={i === 0} className="font-mono text-[10px] text-[#5d6b7a] hover:text-[#a3e635] disabled:opacity-20 leading-none">▲</button>
+              <button type="button" onClick={() => move(i, 1)} disabled={i === items.length - 1} className="font-mono text-[10px] text-[#5d6b7a] hover:text-[#a3e635] disabled:opacity-20 leading-none">▼</button>
+            </div>
+            <span className={`font-mono text-[10px] px-1.5 py-0.5 border ${p.tag === 'INFRA' ? 'border-[#a3e635]/60 text-[#a3e635]' : 'border-[#22d3ee]/60 text-[#22d3ee]'}`}>{p.tag}</span>
+            <div className="flex-1 min-w-0">
+              <div className="font-mono text-[13px] text-[#e8eef5] truncate">{p.name_en}</div>
+              <div className="font-mono text-[11px] text-[#5d6b7a] truncate">{p.name_th}</div>
+            </div>
+            <button type="button" onClick={() => startEdit(p)} className="font-mono text-[11px] text-[#a3e635] hover:underline shrink-0">edit</button>
+            <button type="button" onClick={() => setDeleteTarget(p)} className="font-mono text-[11px] text-[#ff6b6b] hover:underline shrink-0">delete</button>
           </div>
-        </SortableContext>
-      </DndContext>
+        ))}
+      </div>
+      {deleteTarget && (
+        <ConfirmDialog
+          title="Delete project?"
+          body={`This will remove "${deleteTarget.name_en}" from the portfolio.`}
+          busy={deleting}
+          onCancel={() => setDeleteTarget(null)}
+          onConfirm={handleDelete}
+        />
+      )}
     </div>
   )
 }
 
-// ── Skills Tab ───────────────────────────────────────────────
-const EMPTY_SKILL = { name: '', category: '' }
+// ── Experience Tab ────────────────────────────────────────────────
+const EMPTY_EXP = { range_en: '', range_th: '', role: '', org_en: '', org_th: '', body_en: '', body_th: '' }
 
-function SkillsTab() {
-  const [skills, setSkills] = useState([])
-  const [form, setForm] = useState(EMPTY_SKILL)
-  const [loading, setLoading] = useState(false)
+function ExperienceTab() {
+  const [items, setItems] = useState([])
+  const [form, setForm] = useState(EMPTY_EXP)
+  const [editId, setEditId] = useState(null)
+  const [saving, setSaving] = useState(false)
+  const [error, setError] = useState(null)
+  const [deleteTarget, setDeleteTarget] = useState(null)
+  const [deleting, setDeleting] = useState(false)
 
   async function load() {
-    const { data } = await supabase.from('skills').select('*').order('category')
-    setSkills(data ?? [])
+    const { data, error } = await supabase.from('experience').select('*').order('display_order')
+    if (error) { setError(error.message); return }
+    setItems(data ?? [])
   }
   useEffect(() => { load() }, [])
 
-  function handleChange(e) { setForm(prev => ({ ...prev, [e.target.name]: e.target.value })) }
+  const set = k => e => setForm(f => ({ ...f, [k]: e.target.value }))
+
+  function startEdit(item) { setEditId(item.id); setForm({ ...EMPTY_EXP, ...item }) }
+  function cancelEdit() { setEditId(null); setForm(EMPTY_EXP) }
 
   async function handleSubmit(e) {
-    e.preventDefault(); setLoading(true)
-    await supabase.from('skills').insert([form])
-    setForm(EMPTY_SKILL); setLoading(false); load()
+    e.preventDefault(); setSaving(true); setError(null)
+    const payload = { ...form, display_order: editId ? items.find(x => x.id === editId)?.display_order ?? 0 : items.length }
+    const { error } = editId
+      ? await supabase.from('experience').update(payload).eq('id', editId)
+      : await supabase.from('experience').insert([payload])
+    if (error) { setError(error.message); setSaving(false); return }
+    cancelEdit(); setSaving(false); load()
   }
 
-  async function handleDelete(id) {
-    await supabase.from('skills').delete().eq('id', id); load()
+  async function handleDelete() {
+    if (!deleteTarget) return
+    setDeleting(true); setError(null)
+    const { error } = await supabase.from('experience').delete().eq('id', deleteTarget.id)
+    setDeleting(false)
+    if (error) { setError(error.message); return }
+    setDeleteTarget(null); load()
+  }
+
+  async function move(idx, dir) {
+    const next = [...items]
+    const swap = idx + dir
+    if (swap < 0 || swap >= next.length) return
+    ;[next[idx], next[swap]] = [next[swap], next[idx]]
+    setItems(next)
+    const results = await Promise.all([
+      supabase.from('experience').update({ display_order: idx }).eq('id', next[idx].id),
+      supabase.from('experience').update({ display_order: swap }).eq('id', next[swap].id),
+    ])
+    const error = results.find(r => r.error)?.error
+    if (error) setError(error.message)
   }
 
   return (
-    <div className="space-y-6">
-      <form onSubmit={handleSubmit} className="flex gap-3 items-end max-w-lg">
-        <div className="flex-1">
-          <label className="block text-xs font-medium text-gray-600 mb-1">Skill Name</label>
-          <input name="name" value={form.name} onChange={handleChange} required
-            className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#1D9E75]/50 focus:border-[#1D9E75]" />
+    <div className="space-y-8">
+      <form onSubmit={handleSubmit} className="border border-[#1a2330] p-6 space-y-4 max-w-2xl">
+        <div className="font-mono text-[11px] text-[#5d6b7a]">{editId ? '// edit entry' : '// add entry'}</div>
+        <div className="grid grid-cols-2 gap-4">
+          <Field label="Range EN (e.g. Apr 2024 — Present)" value={form.range_en} onChange={set('range_en')} required />
+          <Field label="Range TH (e.g. เม.ย. 2567 — ปัจจุบัน)" value={form.range_th} onChange={set('range_th')} required />
+          <Field label="Role" value={form.role} onChange={set('role')} required />
+          <div /> {/* spacer */}
+          <Field label="Org EN" value={form.org_en} onChange={set('org_en')} />
+          <Field label="Org TH" value={form.org_th} onChange={set('org_th')} />
         </div>
-        <div className="flex-1">
-          <label className="block text-xs font-medium text-gray-600 mb-1">Category</label>
-          <input name="category" value={form.category} onChange={handleChange}
-            placeholder="e.g. Frontend"
-            className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#1D9E75]/50 focus:border-[#1D9E75]" />
+        <Field label="Body EN" value={form.body_en} onChange={set('body_en')} rows={3} />
+        <Field label="Body TH" value={form.body_th} onChange={set('body_th')} rows={3} />
+        <Alert>{error}</Alert>
+        <div className="flex gap-2">
+          <SaveBtn saving={saving} saved={false} />
+          {editId && <button type="button" onClick={cancelEdit} className="h-9 px-5 font-mono text-[12px] border border-[#2a3545] text-[#9aa7b4] hover:border-[#a3e635] hover:text-[#cfd6de] transition-colors">cancel</button>}
         </div>
-        <button type="submit" disabled={loading}
-          className="px-5 py-2 rounded-lg bg-[#1D9E75] text-white text-sm font-semibold hover:bg-[#179060] disabled:opacity-60 whitespace-nowrap">
-          {loading ? '…' : 'Add Skill'}
-        </button>
       </form>
 
-      <div className="flex flex-wrap gap-2 max-w-2xl">
-        {skills.map(s => (
-          <div key={s.id} className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white border border-gray-200 text-sm">
-            <span className="text-gray-700">{s.name}</span>
-            {s.category && <span className="text-gray-400 text-xs">· {s.category}</span>}
-            <button onClick={() => handleDelete(s.id)} className="text-gray-300 hover:text-red-400 ml-1 text-xs font-bold">✕</button>
-          </div>
-        ))}
-      </div>
-    </div>
-  )
-}
-
-// ── Customize Tab ───────────────────────────────────────────
-function CustomizeTab() {
-  const [profile, setProfile] = useState(null)
-  const [profileId, setProfileId] = useState(null)
-  const [socialLinks, setSocialLinks] = useState([])
-  const [accentColor, setAccentColor] = useState('#1D9E75')
-  const [seoForm, setSeoForm] = useState({ seo_title: '', seo_description: '', seo_og_image: '' })
-  const [saving, setSaving] = useState(false)
-  const [newLink, setNewLink] = useState({ platform: '', url: '', icon: '' })
-
-  useEffect(() => {
-    supabase.from('profile').select('*').single().then(({ data }) => {
-      if (data) {
-        setProfileId(data.id)
-        setSocialLinks(data.social_links ?? [])
-        setAccentColor(data.accent_color ?? '#1D9E75')
-        setSeoForm({
-          seo_title: data.seo_title ?? '',
-          seo_description: data.seo_description ?? '',
-          seo_og_image: data.seo_og_image ?? ''
-        })
-      }
-    })
-  }, [])
-
-  async function handleSave() {
-    setSaving(true)
-    await supabase.from('profile').upsert({
-      id: profileId,
-      social_links: socialLinks,
-      accent_color: accentColor,
-      ...seoForm,
-      updated_at: new Date().toISOString()
-    })
-    setSaving(false)
-  }
-
-  function addLink() {
-    if (newLink.platform && newLink.url) {
-      setSocialLinks([...socialLinks, newLink])
-      setNewLink({ platform: '', url: '', icon: '' })
-    }
-  }
-
-  function removeLink(idx) {
-    setSocialLinks(socialLinks.filter((_, i) => i !== idx))
-  }
-
-  return (
-    <div className="space-y-8 max-w-2xl">
-      {/* Social Links */}
-      <div className="bg-gray-50 rounded-xl p-5 space-y-3">
-        <h3 className="font-semibold text-gray-800">Social Links</h3>
-        <div className="space-y-2 flex gap-2 items-end">
-          <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1">Platform</label>
-            <input value={newLink.platform} onChange={(e) => setNewLink({ ...newLink, platform: e.target.value })} placeholder="GitHub"
-              className="border border-gray-200 rounded-lg px-3 py-2 text-sm" />
-          </div>
-          <div className="flex-1">
-            <label className="block text-xs font-medium text-gray-600 mb-1">URL</label>
-            <input value={newLink.url} onChange={(e) => setNewLink({ ...newLink, url: e.target.value })} placeholder="https://github.com/..."
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm" />
-          </div>
-          <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1">Icon</label>
-            <input value={newLink.icon} onChange={(e) => setNewLink({ ...newLink, icon: e.target.value })} placeholder="github"
-              className="border border-gray-200 rounded-lg px-3 py-2 text-sm" />
-          </div>
-          <button onClick={addLink} className="px-4 py-2 bg-[#1D9E75] text-white text-sm font-semibold rounded-lg hover:bg-[#179060]">Add</button>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          {socialLinks.map((link, idx) => (
-            <div key={idx} className="flex items-center gap-2 px-3 py-1.5 bg-white border border-gray-200 rounded-full text-sm">
-              <span className="text-gray-700">{link.platform}</span>
-              <button onClick={() => removeLink(idx)} className="text-gray-300 hover:text-red-400 text-xs font-bold">✕</button>
+      <div className="space-y-2 max-w-2xl">
+        <div className="font-mono text-[10px] text-[#5d6b7a] uppercase tracking-wider mb-3">// {items.length} entries</div>
+        {items.map((item, i) => (
+          <div key={item.id} className="flex items-center gap-3 border border-[#1a2330] bg-[#0a0e12] px-4 py-3 hover:border-[#2a3545] transition-colors">
+            <div className="flex flex-col gap-0.5">
+              <button type="button" onClick={() => move(i, -1)} disabled={i === 0} className="font-mono text-[10px] text-[#5d6b7a] hover:text-[#a3e635] disabled:opacity-20 leading-none">▲</button>
+              <button type="button" onClick={() => move(i, 1)} disabled={i === items.length - 1} className="font-mono text-[10px] text-[#5d6b7a] hover:text-[#a3e635] disabled:opacity-20 leading-none">▼</button>
             </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Accent Color */}
-      <div className="bg-gray-50 rounded-xl p-5 space-y-3">
-        <h3 className="font-semibold text-gray-800">Accent Color</h3>
-        <div className="flex gap-4 items-end">
-          <div>
-            <label className="block text-xs font-medium text-gray-600 mb-1">Color</label>
-            <input type="color" value={accentColor} onChange={(e) => setAccentColor(e.target.value)}
-              className="border border-gray-200 rounded-lg px-3 py-2 w-20 h-10 cursor-pointer" />
-          </div>
-          <span className="text-sm text-gray-500">{accentColor}</span>
-          <div className="w-20 h-10 rounded-lg" style={{ backgroundColor: accentColor }}></div>
-        </div>
-      </div>
-
-      {/* SEO Settings */}
-      <div className="bg-gray-50 rounded-xl p-5 space-y-3">
-        <h3 className="font-semibold text-gray-800">SEO Settings</h3>
-        {[['seo_title', 'SEO Title'], ['seo_description', 'SEO Description'], ['seo_og_image', 'OG Image URL']].map(([key, label]) => (
-          <div key={key}>
-            <label className="block text-xs font-medium text-gray-600 mb-1">{label}</label>
-            <input value={seoForm[key]} onChange={(e) => setSeoForm({ ...seoForm, [key]: e.target.value })}
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#1D9E75]/50" />
+            <div className="flex-1 min-w-0">
+              <div className="font-mono text-[13px] text-[#e8eef5] truncate">{item.role}</div>
+              <div className="font-mono text-[11px] text-[#5d6b7a] truncate">{item.org_en} · {item.range_en}</div>
+            </div>
+            <button type="button" onClick={() => startEdit(item)} className="font-mono text-[11px] text-[#a3e635] hover:underline shrink-0">edit</button>
+            <button type="button" onClick={() => setDeleteTarget(item)} className="font-mono text-[11px] text-[#ff6b6b] hover:underline shrink-0">delete</button>
           </div>
         ))}
       </div>
-
-      <button onClick={handleSave} disabled={saving}
-        className="px-6 py-2.5 rounded-lg bg-[#1D9E75] text-white text-sm font-semibold hover:bg-[#179060] disabled:opacity-60">
-        {saving ? 'Saving…' : 'Save Customize'}
-      </button>
+      {deleteTarget && (
+        <ConfirmDialog
+          title="Delete experience?"
+          body={`This will remove "${deleteTarget.role}" from the timeline.`}
+          busy={deleting}
+          onCancel={() => setDeleteTarget(null)}
+          onConfirm={handleDelete}
+        />
+      )}
     </div>
   )
 }
 
-// ── Messages Tab ─────────────────────────────────────────────
+// ── Messages Tab ──────────────────────────────────────────────────
 function MessagesTab() {
   const [messages, setMessages] = useState([])
+  const [error, setError] = useState(null)
 
   async function load() {
-    const { data } = await supabase.from('messages').select('*').order('created_at', { ascending: false })
+    const { data, error } = await supabase.from('messages').select('*').order('created_at', { ascending: false })
+    if (error) { setError(error.message); return }
     setMessages(data ?? [])
   }
   useEffect(() => { load() }, [])
 
   async function toggleRead(msg) {
-    await supabase.from('messages').update({ read: !msg.read }).eq('id', msg.id)
+    setError(null)
+    const { error } = await supabase.from('messages').update({ read: !msg.read }).eq('id', msg.id)
+    if (error) { setError(error.message); return }
     load()
   }
 
+  const unread = messages.filter(m => !m.read).length
+
   return (
     <div className="space-y-3 max-w-2xl">
-      {messages.length === 0 && <p className="text-gray-400 text-sm">No messages yet.</p>}
+      <div className="font-mono text-[10px] text-[#5d6b7a] uppercase tracking-wider mb-3">
+        // {messages.length} messages{unread > 0 && <span className="ml-2 text-[#a3e635]">· {unread} unread</span>}
+      </div>
+      <Alert>{error}</Alert>
+      {messages.length === 0 && <p className="font-mono text-[13px] text-[#5d6b7a]">no messages yet.</p>}
       {messages.map(m => (
-        <div key={m.id} className={`border rounded-xl p-4 ${m.read ? 'border-gray-100 bg-white' : 'border-[#1D9E75]/30 bg-[#1D9E75]/5'}`}>
+        <div key={m.id} className={`border p-4 transition-colors ${m.read ? 'border-[#1a2330] bg-[#0a0e12]' : 'border-[#a3e635]/30 bg-[#a3e635]/5'}`}>
           <div className="flex items-start justify-between gap-4">
-            <div>
-              <p className="font-medium text-gray-800 text-sm">{m.name} <span className="text-gray-400 font-normal">— {m.email}</span></p>
-              <p className="text-gray-600 text-sm mt-1">{m.message}</p>
-              <p className="text-gray-400 text-xs mt-2">{new Date(m.created_at).toLocaleString()}</p>
+            <div className="min-w-0">
+              <div className="font-mono text-[13px] text-[#e8eef5]">
+                {m.name} <span className="text-[#5d6b7a] font-normal">— {m.email}</span>
+              </div>
+              <p className="mt-1.5 text-[14px] text-[#9aa7b4] leading-relaxed">{m.message}</p>
+              <div className="mt-2 font-mono text-[10px] text-[#5d6b7a]">
+                {new Date(m.created_at).toLocaleString()}
+              </div>
             </div>
-            <button onClick={() => toggleRead(m)}
-              className={`shrink-0 text-xs font-medium px-3 py-1 rounded-full border transition-colors ${m.read ? 'border-gray-200 text-gray-400 hover:border-[#1D9E75] hover:text-[#1D9E75]' : 'border-[#1D9E75] text-[#1D9E75] bg-[#1D9E75]/10'}`}>
-              {m.read ? 'Mark unread' : 'Mark read'}
+            <button onClick={() => toggleRead(m)} className={`shrink-0 font-mono text-[10px] px-3 py-1.5 border transition-colors ${m.read ? 'border-[#1a2330] text-[#5d6b7a] hover:border-[#a3e635] hover:text-[#a3e635]' : 'border-[#a3e635] text-[#a3e635]'}`}>
+              {m.read ? 'mark unread' : 'mark read ✓'}
             </button>
           </div>
         </div>
@@ -403,7 +476,17 @@ function MessagesTab() {
   )
 }
 
-// ── Dashboard Shell ──────────────────────────────────────────
+// ── Block helper ──────────────────────────────────────────────────
+function Block({ title, children }) {
+  return (
+    <section className="border border-[#1a2330] p-6 space-y-4">
+      <div className="font-mono text-[10px] text-[#5d6b7a] uppercase tracking-wider mb-2">// {title}</div>
+      {children}
+    </section>
+  )
+}
+
+// ── Dashboard Shell ───────────────────────────────────────────────
 export default function AdminDashboard() {
   const [tab, setTab] = useState('Profile')
 
@@ -413,29 +496,33 @@ export default function AdminDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[#080c10] font-sans">
       {/* Header */}
-      <header className="bg-white border-b border-gray-100 px-4 py-4 flex items-center justify-between">
-        <h1 className="font-bold text-gray-900">Portfolio Admin</h1>
-        <button onClick={handleSignOut} className="text-sm text-gray-500 hover:text-red-500 transition-colors">Sign out</button>
+      <header className="border-b border-[#1a2330] bg-[#0a0e12] px-6 h-14 flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <span className="font-mono text-[11px] text-[#a3e635]">// admin</span>
+          <a href="/" target="_blank" className="font-mono text-[11px] text-[#5d6b7a] hover:text-[#9aa7b4] transition-colors">← portfolio ↗</a>
+        </div>
+        <button onClick={handleSignOut} className="font-mono text-[11px] text-[#5d6b7a] hover:text-[#ff6b6b] transition-colors">
+          sign_out()
+        </button>
       </header>
 
-      <div className="max-w-4xl mx-auto px-4 py-8">
-        {/* Tabs */}
-        <div className="flex gap-1 mb-8 bg-white border border-gray-100 rounded-xl p-1 w-fit">
+      <div className="max-w-5xl mx-auto px-6 py-8">
+        {/* Tab nav */}
+        <div className="flex gap-1 mb-8 border-b border-[#1a2330] pb-0">
           {TABS.map(t => (
             <button key={t} onClick={() => setTab(t)}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${tab === t ? 'bg-[#1D9E75] text-white' : 'text-gray-500 hover:text-gray-800'}`}>
+              className={`font-mono text-[12px] px-4 py-2.5 border-b-2 transition-colors ${tab === t ? 'border-[#a3e635] text-[#a3e635]' : 'border-transparent text-[#5d6b7a] hover:text-[#9aa7b4]'}`}>
               {t}
             </button>
           ))}
         </div>
 
-        {tab === 'Profile' && <ProfileTab />}
-        {tab === 'Projects' && <ProjectsTab />}
-        {tab === 'Skills' && <SkillsTab />}
-        {tab === 'Messages' && <MessagesTab />}
-        {tab === 'Customize' && <CustomizeTab />}
+        {tab === 'Profile'    && <ProfileTab />}
+        {tab === 'Projects'   && <ProjectsTab />}
+        {tab === 'Experience' && <ExperienceTab />}
+        {tab === 'Messages'   && <MessagesTab />}
       </div>
     </div>
   )

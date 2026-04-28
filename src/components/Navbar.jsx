@@ -3,6 +3,8 @@ import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useTranslation } from 'react-i18next';
 import { useLiveStatus } from '../lib/utils.js';
+import { getPublicUrl } from '../lib/supabase.js';
+import { useProfile } from '../hooks/useProfile.js';
 
 /* ── Typewriter ──────────────────────────────────────────────────── */
 export function Typewriter({ strings = [], mode = 'typewriter', className = '' }) {
@@ -76,11 +78,15 @@ export function Typewriter({ strings = [], mode = 'typewriter', className = '' }
 /* ── Navbar ──────────────────────────────────────────────────────── */
 export function Navbar({ lang, setLang, tweak, onSoundClick }) {
   const { t } = useTranslation();
+  const { data: profile } = useProfile();
   const [scrolled, setScrolled] = useState(false);
   const [visible, setVisible] = useState(true);
   const [mobileOpen, setMobileOpen] = useState(false);
   const lastY = useRef(0);
   const status = useLiveStatus();
+  const cvUrl = profile?.cv_url ? getPublicUrl(profile.cv_url) : null;
+  const commitRef = import.meta.env.VITE_COMMIT_REF || import.meta.env.VERCEL_GIT_COMMIT_SHA?.slice(0, 7) || 'local';
+  const deployLabel = import.meta.env.VITE_DEPLOY_ID || status.deploys;
 
   useEffect(() => {
     const onScroll = () => {
@@ -110,9 +116,9 @@ export function Navbar({ lang, setLang, tweak, onSoundClick }) {
   const tickerItems = [
     `${t('status.ping')} ${status.ping}ms`,
     `${t('status.uptime')} ${status.uptime}`,
-    `${t('status.deploys')} #${status.deploys}`,
+    `${t('status.deploys')} ${deployLabel}`,
     `${t('status.location')} TH/BKK`,
-    `${t('status.lastCommit')} main@a3f9c2`,
+    `${t('status.lastCommit')} ${commitRef}`,
     `${t('status.online')} ●`,
   ];
 
@@ -130,7 +136,7 @@ export function Navbar({ lang, setLang, tweak, onSoundClick }) {
         </div>
         <div className="overflow-hidden flex-1">
           <div className="ticker-track font-mono text-[10px] text-[#5d6b7a]">
-            {[...tickerItems, ...tickerItems].map((item, i) => (
+            {[...tickerItems].map((item, i) => (
               <span key={i} className="mx-8">{item}</span>
             ))}
           </div>
@@ -140,7 +146,7 @@ export function Navbar({ lang, setLang, tweak, onSoundClick }) {
       {/* Main bar */}
       <div className="flex items-center justify-between px-4 md:px-8 h-12">
         {/* Logo */}
-        <button onClick={() => scrollTo('hero')} className="font-mono text-[13px] font-bold text-[color:var(--accent)] tracking-widest glitch" data-text="GUN.DEV">
+        <button onClick={() => scrollTo('top')} className="font-mono text-[13px] font-bold text-[color:var(--accent)] tracking-widest glitch" data-text="GUN.DEV">
           GUN.DEV
         </button>
 
@@ -156,16 +162,28 @@ export function Navbar({ lang, setLang, tweak, onSoundClick }) {
 
         {/* Right controls */}
         <div className="flex items-center gap-2">
+          <a
+            href="/v2"
+            className="btn hidden sm:flex items-center gap-1.5 font-mono text-[11px] px-2.5 h-7 border border-[#1a2330] text-[#9aa7b4] hover:border-[color:var(--accent2)]/70 hover:text-[color:var(--accent2)] transition-colors"
+          >
+            V2
+          </a>
           {/* Lang toggle */}
           <button onClick={() => { onSoundClick?.(); setLang(lang === 'en' ? 'th' : 'en'); }}
             className="btn font-mono text-[11px] px-2.5 h-7 border border-[#1a2330] text-[#9aa7b4] hover:border-[color:var(--accent)]/60 hover:text-[color:var(--accent)] transition-colors">
             {lang === 'en' ? 'TH' : 'EN'}
           </button>
           {/* CV */}
-          <a href="/cv-en.pdf" download
-            className="btn hidden sm:flex items-center gap-1.5 font-mono text-[11px] px-3 h-7 border border-[color:var(--accent)]/40 text-[color:var(--accent)] hover:bg-[color:var(--accent)] hover:text-[#080c10] transition-colors">
-            {t('nav.cv')}
-          </a>
+          {cvUrl ? (
+            <a href={cvUrl} download
+              className="btn hidden sm:flex items-center gap-1.5 font-mono text-[11px] px-3 h-7 border border-[color:var(--accent)]/40 text-[color:var(--accent)] hover:bg-[color:var(--accent)] hover:text-[#080c10] transition-colors">
+              {t('nav.cv')}
+            </a>
+          ) : (
+            <span className="hidden sm:flex items-center gap-1.5 font-mono text-[11px] px-3 h-7 border border-[#1a2330] text-[#5d6b7a] opacity-60">
+              {t('nav.cv')}
+            </span>
+          )}
           {/* Mobile hamburger */}
           <button onClick={() => setMobileOpen(v => !v)} className="md:hidden p-1 text-[#9aa7b4]">
             <div className={`w-5 h-px bg-current mb-1.5 transition-transform ${mobileOpen ? 'rotate-45 translate-y-[7px]' : ''}`} />
@@ -187,8 +205,17 @@ export function Navbar({ lang, setLang, tweak, onSoundClick }) {
                   <span className="text-[color:var(--accent2)] mr-2">{'>'}</span>{t(l.key)}
                 </button>
               ))}
-              <a href="/cv-en.pdf" download className="font-mono text-[12px] text-[color:var(--accent)] mt-1">
-                ↓ {t('nav.cv')}
+              {cvUrl ? (
+                <a href={cvUrl} download className="font-mono text-[12px] text-[color:var(--accent)] mt-1">
+                  ↓ {t('nav.cv')}
+                </a>
+              ) : (
+                <span className="font-mono text-[12px] text-[#5d6b7a] mt-1 opacity-60">
+                  ↓ {t('nav.cv')}
+                </span>
+              )}
+              <a href="/v2" className="font-mono text-[12px] text-[color:var(--accent2)] mt-1">
+                → V2 Landing
               </a>
             </div>
           </motion.div>

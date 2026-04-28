@@ -121,5 +121,52 @@ export const en = {
     phone: "089-529-2758",
     location: "Sriracha, Chonburi, Thailand",
   },
+  v2: {
+    loading: "SYSTEM INITIALIZING",
+    nav: {
+      links: [
+        { id: "v2-highlights", label: "Capabilities" },
+        { id: "v2-projects", label: "Work" },
+        { id: "v2-experience", label: "Experience" },
+        { id: "v2-contact", label: "Contact" },
+      ],
+    },
+    hero: {
+      badge: "Available · IT Engineer",
+      title: "Infrastructure engineering with product-level speed and clarity.",
+      subtitle: "A faster portfolio experience built with GSAP timelines, scroll orchestration, and real project signals from factory IT operations.",
+      ctaPrimary: "Explore Work",
+      ctaSecondary: "Talk to Me",
+    },
+    highlights: {
+      kicker: "// capabilities",
+      title: "Core Capabilities",
+      items: [
+        { title: "Autonomous Ops Mindset", body: "From network setup to ERP support, problems are handled end-to-end with less handoff and clearer ownership." },
+        { title: "Signal-First Debugging", body: "Incidents are triaged with context first: root cause, impact range, and the fastest safe recovery path." },
+        { title: "Production-Safe Delivery", body: "Changes are rolled out in stages, monitored for stability, and documented for future maintenance." },
+      ],
+    },
+    proof: {
+      title: "Built for real manufacturing constraints, not demo-only scenarios.",
+      responseValue: "<24h",
+      stats: {
+        projects: "Featured projects",
+        years: "Years in factory IT",
+        response: "Typical response",
+      },
+    },
+    projects: {
+      title: "Featured implementations",
+    },
+    experience: {
+      title: "Recent timeline",
+    },
+    contact: {
+      title: "Need infrastructure and support that stays reliable under pressure?",
+      ctaPrimary: "Send Email",
+      ctaSecondary: "Open Legacy Site",
+    },
+  },
   footer: "Built with too much coffee and too many VLANs. © 2026 Gorawit Phinit.",
 };

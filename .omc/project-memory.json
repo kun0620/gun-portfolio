@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "lastScanned": 1777021662318,
+  "lastScanned": 1777338358028,
   "projectRoot": "C:\\Users\\ktmis010\\gun-portfolio",
   "techStack": {
     "languages": [
@@ -67,7 +67,7 @@
       "path": "dist",
       "purpose": "Distribution/build output",
       "fileCount": 1,
-      "lastAccessed": 1777021662251,
+      "lastAccessed": 1777338357978,
       "keyFiles": [
         "index.html"
       ]
@@ -76,7 +76,7 @@
       "path": "src",
       "purpose": "Source code",
       "fileCount": 4,
-      "lastAccessed": 1777021662252,
+      "lastAccessed": 1777338358004,
       "keyFiles": [
         "App.jsx",
         "i18n.js",
@@ -88,24 +88,25 @@
       "path": "supabase",
       "purpose": null,
       "fileCount": 0,
-      "lastAccessed": 1777021662283,
+      "lastAccessed": 1777338358005,
       "keyFiles": []
     },
     "dist\\assets": {
       "path": "dist\\assets",
       "purpose": "Static assets",
-      "fileCount": 2,
-      "lastAccessed": 1777021662285,
+      "fileCount": 10,
+      "lastAccessed": 1777338358006,
       "keyFiles": [
-        "index-cOSimwF0.js",
-        "index-DJdcvYSF.css"
+        "AdminDashboard-28VTopy6.js",
+        "AdminLogin-C7YxJwMj.js",
+        "index-DfR3epbv.css"
       ]
     },
     "src\\components": {
       "path": "src\\components",
       "purpose": "UI components",
       "fileCount": 8,
-      "lastAccessed": 1777021662286,
+      "lastAccessed": 1777338358007,
       "keyFiles": [
         "CustomizePanel.jsx",
         "Footer.jsx",
@@ -116,7 +117,7 @@
       "path": "src\\lib",
       "purpose": "Library code",
       "fileCount": 3,
-      "lastAccessed": 1777021662287,
+      "lastAccessed": 1777338358007,
       "keyFiles": [
         "animations.js",
         "supabase.js",
@@ -126,233 +127,73 @@
     "src\\pages": {
       "path": "src\\pages",
       "purpose": "Page components",
-      "fileCount": 1,
-      "lastAccessed": 1777021662287,
+      "fileCount": 4,
+      "lastAccessed": 1777338358007,
       "keyFiles": [
-        "Home.jsx"
+        "Home.jsx",
+        "V2HeroCanvas.jsx",
+        "V2Landing.jsx"
       ]
     },
     "supabase\\migrations": {
       "path": "supabase\\migrations",
       "purpose": "Database migrations",
       "fileCount": 3,
-      "lastAccessed": 1777021662288,
+      "lastAccessed": 1777338358008,
       "keyFiles": [
         "001_init.sql",
-        "002_customize.sql",
+        "002_storage.sql",
         "003_seed_data.sql"
       ]
     }
   },
   "hotPaths": [
     {
-      "path": "src\\pages\\admin\\AdminDashboard.jsx",
-      "accessCount": 11,
-      "lastAccessed": 1776935510717,
-      "type": "file"
-    },
-    {
-      "path": "src\\sections\\Hero.jsx",
-      "accessCount": 10,
-      "lastAccessed": 1776997119814,
-      "type": "file"
-    },
-    {
       "path": "src\\index.css",
-      "accessCount": 9,
-      "lastAccessed": 1777000514112,
-      "type": "file"
-    },
-    {
-      "path": "src\\components\\Navbar.jsx",
-      "accessCount": 8,
-      "lastAccessed": 1777019016028,
-      "type": "file"
-    },
-    {
-      "path": "src\\App.jsx",
-      "accessCount": 8,
-      "lastAccessed": 1777021753796,
-      "type": "file"
-    },
-    {
-      "path": "src\\components\\Footer.jsx",
-      "accessCount": 7,
-      "lastAccessed": 1777018966359,
-      "type": "file"
-    },
-    {
-      "path": "src\\pages\\Home.jsx",
-      "accessCount": 6,
-      "lastAccessed": 1776997119673,
-      "type": "file"
-    },
-    {
-      "path": "src\\sections\\Projects.jsx",
-      "accessCount": 6,
-      "lastAccessed": 1776997119878,
-      "type": "file"
-    },
-    {
-      "path": "src\\components\\Sections.jsx",
       "accessCount": 5,
-      "lastAccessed": 1777021765237,
-      "type": "file"
-    },
-    {
-      "path": "src\\sections\\Skills.jsx",
-      "accessCount": 4,
-      "lastAccessed": 1776997120143,
-      "type": "file"
-    },
-    {
-      "path": "src\\sections\\Contact.jsx",
-      "accessCount": 4,
-      "lastAccessed": 1776997120327,
-      "type": "file"
-    },
-    {
-      "path": "src\\main.jsx",
-      "accessCount": 4,
-      "lastAccessed": 1777000468958,
-      "type": "file"
-    },
-    {
-      "path": "package.json",
-      "accessCount": 4,
-      "lastAccessed": 1777019219462,
-      "type": "file"
-    },
-    {
-      "path": "src\\lib\\animations.js",
-      "accessCount": 3,
-      "lastAccessed": 1776997125058,
-      "type": "file"
-    },
-    {
-      "path": "vite.config.js",
-      "accessCount": 3,
-      "lastAccessed": 1777000467613,
-      "type": "file"
-    },
-    {
-      "path": "supabase\\migrations\\002_customize.sql",
-      "accessCount": 2,
-      "lastAccessed": 1776997120577,
-      "type": "file"
-    },
-    {
-      "path": "supabase\\migrations\\003_seed_data.sql",
-      "accessCount": 2,
-      "lastAccessed": 1776997125361,
+      "lastAccessed": 1777340091643,
       "type": "file"
     },
     {
       "path": "index.html",
       "accessCount": 2,
-      "lastAccessed": 1777000466287,
+      "lastAccessed": 1777340040613,
+      "type": "file"
+    },
+    {
+      "path": "src\\App.jsx",
+      "accessCount": 1,
+      "lastAccessed": 1777344144646,
+      "type": "file"
+    },
+    {
+      "path": "",
+      "accessCount": 1,
+      "lastAccessed": 1777344145078,
+      "type": "directory"
+    },
+    {
+      "path": "src\\components\\Sections.jsx",
+      "accessCount": 1,
+      "lastAccessed": 1777344180309,
+      "type": "file"
+    },
+    {
+      "path": "src\\components\\Navbar.jsx",
+      "accessCount": 1,
+      "lastAccessed": 1777344180367,
       "type": "file"
     },
     {
       "path": "src\\components\\Hero.jsx",
-      "accessCount": 2,
-      "lastAccessed": 1777019869241,
-      "type": "file"
-    },
-    {
-      "path": "src\\locales\\en.js",
-      "accessCount": 2,
-      "lastAccessed": 1777020615643,
-      "type": "file"
-    },
-    {
-      "path": "src\\locales\\th.js",
-      "accessCount": 2,
-      "lastAccessed": 1777020658517,
-      "type": "file"
-    },
-    {
-      "path": "src\\hooks\\useUpload.js",
       "accessCount": 1,
-      "lastAccessed": 1776917354452,
-      "type": "file"
-    },
-    {
-      "path": "src\\hooks\\useScrollReveal.js",
-      "accessCount": 1,
-      "lastAccessed": 1776935993684,
-      "type": "file"
-    },
-    {
-      "path": "src\\components\\Skeleton.jsx",
-      "accessCount": 1,
-      "lastAccessed": 1776936194809,
-      "type": "file"
-    },
-    {
-      "path": "supabase\\migrations\\001_init.sql",
-      "accessCount": 1,
-      "lastAccessed": 1776997120508,
-      "type": "file"
-    },
-    {
-      "path": "src\\lib\\supabase.js",
-      "accessCount": 1,
-      "lastAccessed": 1776997124760,
-      "type": "file"
-    },
-    {
-      "path": "src\\i18n.js",
-      "accessCount": 1,
-      "lastAccessed": 1777000450708,
-      "type": "file"
-    },
-    {
-      "path": "src\\lib\\utils.js",
-      "accessCount": 1,
-      "lastAccessed": 1777000607143,
-      "type": "file"
-    },
-    {
-      "path": "src\\components\\Topology.jsx",
-      "accessCount": 1,
-      "lastAccessed": 1777019036340,
+      "lastAccessed": 1777344180415,
       "type": "file"
     },
     {
       "path": "src\\components\\CustomizePanel.jsx",
       "accessCount": 1,
-      "lastAccessed": 1777019068023,
-      "type": "file"
-    },
-    {
-      "path": ".claude\\launch.json",
-      "accessCount": 1,
-      "lastAccessed": 1777019634274,
-      "type": "file"
-    },
-    {
-      "path": "src\\components",
-      "accessCount": 1,
-      "lastAccessed": 1777019874288,
-      "type": "directory"
-    },
-    {
-      "path": "src\\hooks\\useProfile.js",
-      "accessCount": 1,
-      "lastAccessed": 1777021933921,
-      "type": "file"
-    },
-    {
-      "path": "src\\hooks\\useProjects.js",
-      "accessCount": 1,
-      "lastAccessed": 1777021936116,
-      "type": "file"
-    },
-    {
-      "path": "src\\hooks\\useExperience.js",
-      "accessCount": 1,
-      "lastAccessed": 1777021938029,
+      "lastAccessed": 1777344218326,
       "type": "file"
     }
   ],

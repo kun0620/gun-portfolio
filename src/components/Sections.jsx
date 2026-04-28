@@ -2,6 +2,10 @@ import { motion } from 'motion/react';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { beep } from '../lib/utils.js';
+import { supabase, getPublicUrl } from '../lib/supabase.js';
+import { useProfile } from '../hooks/useProfile.js';
+import { useProjects } from '../hooks/useProjects.js';
+import { useExperience } from '../hooks/useExperience.js';
 
 export function SectionHeader({ kicker, title, id }) {
   return (
@@ -13,9 +17,19 @@ export function SectionHeader({ kicker, title, id }) {
 }
 
 export function About() {
-  const { t } = useTranslation();
-  const stats = t('about.stats', { returnObjects: true });
-  const body = t('about.body', { returnObjects: true });
+  const { t, i18n } = useTranslation();
+  const lang = i18n.language;
+  const { data: profile } = useProfile();
+
+  const body = profile?.[`bio_${lang}`] ?? t('about.body', { returnObjects: true });
+  const localeStats = t('about.stats', { returnObjects: true });
+  const stats = profile ? [
+    { value: profile.stat_1_value, label: profile[`stat_1_label_${lang}`] },
+    { value: profile.stat_2_value, label: profile[`stat_2_label_${lang}`] },
+    { value: profile.stat_3_value, label: profile[`stat_3_label_${lang}`] },
+  ] : localeStats;
+  const photoUrl = profile?.photo_url ? getPublicUrl(profile.photo_url) : null;
+
   return (
     <section className="relative content-section py-24 border-t border-[#121820]">
       <div className="max-w-[1280px] mx-auto px-6">
@@ -23,23 +37,29 @@ export function About() {
         <div className="grid lg:grid-cols-[380px_1fr] gap-10 lg:gap-16">
           <div className="reveal">
             <div className="relative aspect-[4/5] border border-[#1a2330] bg-[#0a0e12] overflow-hidden">
-              <div className="absolute inset-0 bg-dots opacity-40" />
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="w-32 h-32 rounded-full border-2 border-dashed border-[#2a3545] flex items-center justify-center font-mono text-[color:var(--accent)] text-xs tracking-widest">GUN.jpg</div>
-              </div>
+              {photoUrl ? (
+                <img src={photoUrl} alt="Gorawit Phinit" className="absolute inset-0 w-full h-full object-cover" />
+              ) : (
+                <>
+                  <div className="absolute inset-0 bg-dots opacity-40" />
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="w-32 h-32 rounded-full border-2 border-dashed border-[#2a3545] flex items-center justify-center font-mono text-[color:var(--accent)] text-xs tracking-widest">GUN.jpg</div>
+                  </div>
+                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-px bg-[color:var(--accent)]/30" />
+                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-px h-16 bg-[color:var(--accent)]/30" />
+                </>
+              )}
               <div className="absolute top-3 left-3 right-3 flex items-center justify-between font-mono text-[10px] text-[#5d6b7a]">
                 <span>IMG_0421.RAW</span><span className="text-[color:var(--accent2)]">● REC</span>
               </div>
               <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between font-mono text-[10px] text-[#5d6b7a]">
                 <span>f/1.8 · 1/125s · ISO 400</span><span>+</span>
               </div>
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-px bg-[color:var(--accent)]/30" />
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-px h-16 bg-[color:var(--accent)]/30" />
             </div>
           </div>
           <div className="reveal">
             <div className="space-y-6 text-[17px] text-[#cfd6de] leading-relaxed max-w-2xl" style={{ textWrap: 'pretty' }}>
-              {body.map((p, i) => <p key={i}>{p}</p>)}
+              {(Array.isArray(body) ? body : [body]).map((p, i) => <p key={i}>{p}</p>)}
             </div>
             <div className="mt-10 grid grid-cols-3 gap-px bg-[#1a2330] border border-[#1a2330]">
               {stats.map((s, i) => (
@@ -85,9 +105,27 @@ export function Skills() {
 }
 
 export function Projects({ onSoundClick }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const lang = i18n.language;
+  const { data: dbProjects } = useProjects();
   const filters = t('projects.filters', { returnObjects: true });
-  const items = t('projects.items', { returnObjects: true });
+  const localeItems = t('projects.items', { returnObjects: true });
+
+  const items = dbProjects
+    ? dbProjects.map(p => ({
+        tag: p.tag,
+        name: p[`name_${lang}`] ?? p.name_en,
+        sub: p[`sub_${lang}`] ?? p.sub_en,
+        body: p[`body_${lang}`] ?? p.body_en,
+        stack: p.stack ?? [],
+        metrics: p.metrics ?? null,
+        featured: p.featured,
+        case_study_url: p.case_study_url,
+        github_url: p.github_url,
+        live_url: p.live_url,
+      }))
+    : localeItems;
+
   const [filter, setFilter] = useState(filters[0]);
   const filtered = useMemo(() => {
     const f = filters.indexOf(filter);
@@ -125,11 +163,15 @@ export function Projects({ onSoundClick }) {
                 <div className="mt-5 flex flex-wrap gap-1.5">
                   {p.stack.map(s => <span key={s} className="font-mono text-[10.5px] px-1.5 py-0.5 border border-[#1a2330] text-[#9aa7b4]">{s}</span>)}
                 </div>
-                <div className="mt-6 flex items-center gap-4 font-mono text-[11px]">
-                  <a href="#" className="text-[color:var(--accent)] link-u">read_case_study()</a>
-                  <span className="text-[#5d6b7a]">·</span>
-                  <a href="#" className="text-[#9aa7b4] hover:text-[color:var(--accent)] link-u">git.log</a>
-                </div>
+                {(p.case_study_url || p.github_url || p.live_url) && (
+                  <div className="mt-6 flex items-center gap-4 font-mono text-[11px]">
+                    {p.case_study_url && <a href={p.case_study_url} target="_blank" rel="noopener noreferrer" className="text-[color:var(--accent)] link-u">read_case_study()</a>}
+                    {p.case_study_url && (p.github_url || p.live_url) && <span className="text-[#5d6b7a]">·</span>}
+                    {p.github_url && <a href={p.github_url} target="_blank" rel="noopener noreferrer" className="text-[#9aa7b4] hover:text-[color:var(--accent)] link-u">git.log</a>}
+                    {p.github_url && p.live_url && <span className="text-[#5d6b7a]">·</span>}
+                    {p.live_url && <a href={p.live_url} target="_blank" rel="noopener noreferrer" className="text-[#9aa7b4] hover:text-[color:var(--accent)] link-u">open_live()</a>}
+                  </div>
+                )}
               </div>
               {p.featured && p.metrics && (
                 <div className="relative border-t lg:border-t-0 lg:border-l border-[#1a2330] p-7 lg:p-9 bg-[#060a0d] bg-grid">
@@ -153,8 +195,18 @@ export function Projects({ onSoundClick }) {
 }
 
 export function Experience() {
-  const { t } = useTranslation();
-  const items = t('experience.items', { returnObjects: true });
+  const { t, i18n } = useTranslation();
+  const lang = i18n.language;
+  const { data: dbExp } = useExperience();
+
+  const items = dbExp
+    ? dbExp.map(e => ({
+        range: e[`range_${lang}`] ?? e.range_en,
+        role: e.role,
+        org: e[`org_${lang}`] ?? e.org_en,
+        body: e[`body_${lang}`] ?? e.body_en,
+      }))
+    : t('experience.items', { returnObjects: true });
   return (
     <section className="relative content-section py-24 border-t border-[#121820]">
       <div className="max-w-[1280px] mx-auto px-6">
@@ -183,9 +235,35 @@ export function Experience() {
 
 export function Contact({ onSoundClick }) {
   const { t } = useTranslation();
+  const { data: profile } = useProfile();
   const [sent, setSent] = useState(false);
+  const [error, setError] = useState(null);
+  const [sending, setSending] = useState(false);
   const [form, setForm] = useState({ name:'', email:'', message:'' });
-  const submit = (e) => { e.preventDefault(); setSent(true); beep(880,.08); setTimeout(() => beep(1320,.08), 120); };
+
+  const submit = async (e) => {
+    e.preventDefault();
+    setSending(true);
+    setSent(false);
+    setError(null);
+    const { error: insertError } = await supabase.from('messages').insert([{ name: form.name, email: form.email, message: form.message }]);
+    setSending(false);
+    if (insertError) {
+      setError(insertError.message || 'Could not send message. Please try email or Line.');
+      return;
+    }
+    setForm({ name:'', email:'', message:'' });
+    setSent(true); beep(880,.08); setTimeout(() => beep(1320,.08), 120);
+  };
+
+  const qrUrl = profile?.wechat_qr_url ? getPublicUrl(profile.wechat_qr_url) : null;
+  const socials = [
+    { label: 'GitHub',   icon: '⌘', href: profile?.github_url || null, sub: profile?.github_url || 'not set' },
+    { label: 'LinkedIn', icon: 'in', href: profile?.linkedin_url || null, sub: profile?.linkedin_url || 'not set' },
+    { label: 'Line',     icon: 'L',  href: profile?.line_id ? `https://line.me/ti/p/~${profile.line_id}` : null, sub: profile?.line_id || 'not set' },
+    { label: 'Email',    icon: '@',  href: profile?.email ? `mailto:${profile.email}` : null, sub: profile?.email || t('contact.email') },
+  ];
+
   return (
     <section className="relative content-section py-24 border-t border-[#121820]">
       <div className="max-w-[1280px] mx-auto px-6">
@@ -213,35 +291,52 @@ export function Contact({ onSoundClick }) {
                 </label>
               </div>
               <div className="flex items-center justify-between px-5 pb-5">
-                {sent ? <span className="font-mono text-[12px] text-[color:var(--accent2)]">{t('contact.form.sent')}</span>
-                      : <span className="font-mono text-[12px] text-[#5d6b7a]">press Enter or click →</span>}
-                <button type="submit" onMouseEnter={onSoundClick} className="btn inline-flex items-center gap-2 h-10 px-5 font-mono text-[12px] bg-[color:var(--accent)] text-[#080c10] hover:bg-white">
-                  {t('contact.form.send')} <span>▸</span>
+                {error ? <span className="font-mono text-[12px] text-[#ff6b6b]">[error] {error}</span>
+                  : sent ? <span className="font-mono text-[12px] text-[color:var(--accent2)]">{t('contact.form.sent')}</span>
+                  : <span className="font-mono text-[12px] text-[#5d6b7a]">press Enter or click →</span>}
+                <button type="submit" disabled={sending} onMouseEnter={onSoundClick} className="btn inline-flex items-center gap-2 h-10 px-5 font-mono text-[12px] bg-[color:var(--accent)] text-[#080c10] hover:bg-white disabled:opacity-50">
+                  {sending ? 'sending...' : t('contact.form.send')} <span>▸</span>
                 </button>
               </div>
             </div>
           </form>
+
           <div className="reveal space-y-5">
+            {/* WeChat QR */}
             <div className="border border-[#1a2330] bg-[#0a0e12]/60 p-6 flex gap-5 items-start">
-              <div className="w-28 h-28 bg-white p-2 shrink-0 flex items-center justify-center font-mono text-[9px] text-[#080c10]">QR · scan me</div>
+              <div className="w-28 h-28 bg-white p-2 shrink-0 flex items-center justify-center overflow-hidden">
+                {qrUrl
+                  ? <img src={qrUrl} alt="WeChat QR" className="w-full h-full object-contain" />
+                  : <span className="font-mono text-[9px] text-[#080c10]">QR · scan me</span>}
+              </div>
               <div>
                 <div className="font-mono text-[11px] text-[#5d6b7a]">// wechat</div>
                 <div className="font-semibold text-[#e8eef5]">{t('contact.qr')}</div>
                 <div className="mt-2 text-[13px] text-[#9aa7b4]">scan to add</div>
-                <div className="mt-3 font-mono text-[11px] text-[color:var(--accent)]">wxid_gun_eng</div>
+                {profile?.line_id && <div className="mt-3 font-mono text-[11px] text-[color:var(--accent)]">{profile.line_id}</div>}
               </div>
             </div>
+
+            {/* Social links */}
             <div className="border border-[#1a2330] bg-[#0a0e12]/60 divide-y divide-[#121820]">
-              {[['GitHub','github.com/gun-eng','⌘'],['LinkedIn','linkedin.com/in/gun-eng','in'],['Line','@gun.eng','L'],['Email','hello@gun.eng','@']].map(([k, v, g]) => (
-                <a key={k} href="#" onMouseEnter={onSoundClick} className="flex items-center gap-4 px-5 py-3.5 group hover:bg-[#121820]/50">
-                  <span className="w-8 h-8 border border-[#1a2330] flex items-center justify-center font-mono text-[color:var(--accent)] group-hover:border-[color:var(--accent)]">{g}</span>
-                  <div className="flex-1"><div className="font-semibold text-[#e8eef5]">{k}</div><div className="font-mono text-[11px] text-[#5d6b7a]">{v}</div></div>
-                  <span className="text-[color:var(--accent)] opacity-0 group-hover:opacity-100 transition-opacity">→</span>
-                </a>
-              ))}
+              {socials.map(({ label, icon, href, sub }) => {
+                const Comp = href ? 'a' : 'div';
+                return (
+                <Comp key={label} href={href || undefined} target={href?.startsWith('http') ? '_blank' : undefined} rel="noopener noreferrer"
+                  onMouseEnter={href ? onSoundClick : undefined}
+                  className={`flex items-center gap-4 px-5 py-3.5 group ${href ? 'hover:bg-[#121820]/50' : 'opacity-60'}`}>
+                  <span className="w-8 h-8 border border-[#1a2330] flex items-center justify-center font-mono text-[color:var(--accent)] group-hover:border-[color:var(--accent)]">{icon}</span>
+                  <div className="flex-1 min-w-0">
+                    <div className="font-semibold text-[#e8eef5]">{label}</div>
+                    <div className="font-mono text-[11px] text-[#5d6b7a] truncate">{sub}</div>
+                  </div>
+                  {href && <span className="text-[color:var(--accent)] opacity-0 group-hover:opacity-100 transition-opacity">→</span>}
+                </Comp>
+              )})}
             </div>
           </div>
         </div>
+
         <footer className="mt-20 pt-6 border-t border-[#121820] flex flex-wrap items-center gap-3 font-mono text-[11px] text-[#5d6b7a]">
           <span>{t('footer')}</span>
           <span className="ml-auto">press <span className="kbd">↑↑↓↓←→←→BA</span> for a surprise</span>
