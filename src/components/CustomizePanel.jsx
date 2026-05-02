@@ -111,6 +111,11 @@ export default function CustomizePanel({ tweak, setTweak }) {
                    options={[{value:'en',label:'EN'},{value:'th',label:'TH'}]} />
             </Row>
 
+            <Row label="theme">
+              <Seg value={tweak.theme || 'dark'} onChange={v => setTweak('theme', v)}
+                   options={[{value:'dark',label:'dark'},{value:'light',label:'light'}]} />
+            </Row>
+
             <Row label="extras">
               <div className="space-y-1.5">
                 {[
@@ -132,7 +137,7 @@ export default function CustomizePanel({ tweak, setTweak }) {
             <button onClick={() => {
               setTweak('accent','sky-lime'); setTweak('bgPattern','dots');
               setTweak('heroStyle','ascii'); setTweak('roleAnim','typewriter');
-              setTweak('density','comfy'); setTweak('lang','en');
+              setTweak('density','comfy'); setTweak('lang','en'); setTweak('theme','dark');
               setTweak('topology',true); setTweak('crosshair',false); setTweak('sound',false);
             }} className="mt-2 w-full h-8 font-mono text-[11px] text-[#5d6b7a] hover:text-[#cfd6de] border border-dashed border-[#1a2330] hover:border-[#2a3545] btn">
               reset_defaults()

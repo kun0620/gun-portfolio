@@ -108,7 +108,6 @@ export function Projects({ onSoundClick }) {
   const { t, i18n } = useTranslation();
   const lang = i18n.language;
   const { data: dbProjects } = useProjects();
-  const filters = t('projects.filters', { returnObjects: true });
   const localeItems = t('projects.items', { returnObjects: true });
 
   const items = dbProjects
@@ -126,36 +125,31 @@ export function Projects({ onSoundClick }) {
       }))
     : localeItems;
 
-  const [filter, setFilter] = useState(filters[0]);
-  const filtered = useMemo(() => {
-    const f = filters.indexOf(filter);
-    if (f <= 0) return items;
-    const tag = ['INFRA','WEB'][f-1];
-    return items.filter(p => p.tag === tag);
-  }, [filter, items, filters]);
+  const filtered = useMemo(() => items.filter(p => p.tag === 'INFRA'), [items]);
 
   return (
     <section className="relative content-section py-24 border-t border-[#121820]">
       <div className="max-w-[1280px] mx-auto px-6">
         <SectionHeader id="projects" kicker={t('projects.kicker')} title={t('projects.title')} />
-        <div className="flex items-center gap-1 mb-8 font-mono text-[12px]">
-          {filters.map((f, i) => (
-            <button key={f} onClick={() => { setFilter(f); onSoundClick?.(); }}
-              className={`btn h-8 px-3 border ${filter===f ? 'bg-[color:var(--accent)] text-[#080c10] border-[color:var(--accent)]' : 'text-[#9aa7b4] border-[#1a2330] hover:border-[#2a3545] hover:text-[#cfd6de]'}`}>
-              {i===0 ? '▸ ' : ''}{f}
-            </button>
-          ))}
-          <div className="ml-auto text-[#5d6b7a]">{filtered.length} / {items.length} entries</div>
+        <div className="flex items-center gap-2 mb-8 font-mono text-[12px]">
+          <span className="h-8 px-3 border border-[color:var(--accent)]/50 text-[color:var(--accent)] inline-flex items-center">INFRA</span>
+          <div className="ml-auto text-[#5d6b7a]">{filtered.length} entries</div>
         </div>
-        <div className="grid gap-6">
+        <div className="grid grid-cols-1 gap-6">
           {filtered.map((p, i) => (
             <motion.article key={p.name+i} initial={{ opacity:0, y: 24 }} whileInView={{ opacity:1, y:0 }} viewport={{ once:true, margin:'-80px' }} transition={{ duration:.6, delay: i*.06 }}
-              className={`group relative border border-[#1a2330] bg-[#0a0e12]/50 hover:border-[color:var(--accent)]/60 transition-colors overflow-hidden ${p.featured ? 'lg:grid lg:grid-cols-[1.3fr_1fr]' : ''}`}>
+              className="group relative border border-[#1a2330] bg-[#0a0e12]/50 hover:border-[color:var(--accent)]/60 transition-all duration-200 overflow-hidden md:grid md:grid-cols-[1.35fr_1fr]">
               <div className="p-7 lg:p-9">
                 <div className="flex items-center gap-3 font-mono text-[11px] mb-4">
-                  <span className={`px-2 py-0.5 border ${p.tag==='INFRA' ? 'border-[color:var(--accent)] text-[color:var(--accent)]' : 'border-[color:var(--accent2)] text-[color:var(--accent2)]'}`}>{p.tag}</span>
+                  <span className={`px-2 py-0.5 border ${
+                    p.tag === 'INFRA'
+                      ? 'border-[color:var(--accent)] text-[color:var(--accent)]'
+                      : p.tag === 'WEB'
+                        ? 'border-[color:var(--accent2)] text-[color:var(--accent2)]'
+                        : 'border-[#a78bfa] text-[#a78bfa]'
+                  }`}>{p.tag}</span>
                   {p.featured && <span className="text-[#5d6b7a]">★ featured</span>}
-                  <span className="text-[#5d6b7a]">{String(i+1).padStart(2,'0')} / {items.length}</span>
+                  <span className="text-[#5d6b7a]">{String(i+1).padStart(2,'0')} / {filtered.length}</span>
                 </div>
                 <h3 className="text-[22px] lg:text-[28px] font-semibold text-[#e8eef5] group-hover:text-[color:var(--accent)] transition-colors" style={{ textWrap:'balance' }}>{p.name}</h3>
                 <div className="font-mono text-[12px] text-[#5d6b7a] mt-1">{p.sub}</div>
@@ -163,6 +157,8 @@ export function Projects({ onSoundClick }) {
                 <div className="mt-5 flex flex-wrap gap-1.5">
                   {p.stack.map(s => <span key={s} className="font-mono text-[10.5px] px-1.5 py-0.5 border border-[#1a2330] text-[#9aa7b4]">{s}</span>)}
                 </div>
+              </div>
+              <div className="border-t md:border-t-0 md:border-l border-[#1a2330] p-7 lg:p-9 bg-[#060a0d] bg-grid flex flex-col">
                 {(p.case_study_url || p.github_url || p.live_url) && (
                   <div className="mt-6 flex items-center gap-4 font-mono text-[11px]">
                     {p.case_study_url && <a href={p.case_study_url} target="_blank" rel="noopener noreferrer" className="text-[color:var(--accent)] link-u">read_case_study()</a>}
@@ -172,20 +168,20 @@ export function Projects({ onSoundClick }) {
                     {p.live_url && <a href={p.live_url} target="_blank" rel="noopener noreferrer" className="text-[#9aa7b4] hover:text-[color:var(--accent)] link-u">open_live()</a>}
                   </div>
                 )}
-              </div>
-              {p.featured && p.metrics && (
-                <div className="relative border-t lg:border-t-0 lg:border-l border-[#1a2330] p-7 lg:p-9 bg-[#060a0d] bg-grid">
-                  <div className="font-mono text-[11px] text-[#5d6b7a] mb-4">// metrics.log</div>
-                  <div className="space-y-5">
-                    {p.metrics.map(([k, v]) => (
-                      <div key={k} className="pb-4 border-b border-[#121820] last:border-0">
-                        <div className="font-mono text-[10px] text-[#5d6b7a] uppercase tracking-wider">{k}</div>
-                        <div className="font-mono text-[32px] font-bold text-[color:var(--accent)] mt-1">{v}</div>
-                      </div>
-                    ))}
+                {p.metrics && (
+                  <div className="mt-6">
+                    <div className="font-mono text-[11px] text-[#5d6b7a] mb-4">// metrics.log</div>
+                    <div className="space-y-5">
+                      {p.metrics.map(([k, v]) => (
+                        <div key={k} className="pb-4 border-b border-[#121820] last:border-0">
+                          <div className="font-mono text-[10px] text-[#5d6b7a] uppercase tracking-wider">{k}</div>
+                          <div className="font-mono text-[32px] font-bold text-[color:var(--accent)] mt-1">{v}</div>
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
+              </div>
             </motion.article>
           ))}
         </div>

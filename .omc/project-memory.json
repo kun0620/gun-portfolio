@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "lastScanned": 1777338358028,
+  "lastScanned": 1777425502012,
   "projectRoot": "C:\\Users\\ktmis010\\gun-portfolio",
   "techStack": {
     "languages": [
@@ -54,6 +54,7 @@
     "isMonorepo": false,
     "workspaces": [],
     "mainDirectories": [
+      "public",
       "src"
     ],
     "gitBranches": {
@@ -67,16 +68,23 @@
       "path": "dist",
       "purpose": "Distribution/build output",
       "fileCount": 1,
-      "lastAccessed": 1777338357978,
+      "lastAccessed": 1777425501962,
       "keyFiles": [
         "index.html"
       ]
+    },
+    "public": {
+      "path": "public",
+      "purpose": "Public files",
+      "fileCount": 0,
+      "lastAccessed": 1777425501985,
+      "keyFiles": []
     },
     "src": {
       "path": "src",
       "purpose": "Source code",
       "fileCount": 4,
-      "lastAccessed": 1777338358004,
+      "lastAccessed": 1777425501986,
       "keyFiles": [
         "App.jsx",
         "i18n.js",
@@ -87,26 +95,28 @@
     "supabase": {
       "path": "supabase",
       "purpose": null,
-      "fileCount": 0,
-      "lastAccessed": 1777338358005,
-      "keyFiles": []
+      "fileCount": 1,
+      "lastAccessed": 1777425501987,
+      "keyFiles": [
+        "seed-demos.sql"
+      ]
     },
     "dist\\assets": {
       "path": "dist\\assets",
       "purpose": "Static assets",
       "fileCount": 10,
-      "lastAccessed": 1777338358006,
+      "lastAccessed": 1777425501989,
       "keyFiles": [
-        "AdminDashboard-28VTopy6.js",
-        "AdminLogin-C7YxJwMj.js",
-        "index-DfR3epbv.css"
+        "AdminDashboard-C88gXcIW.js",
+        "AdminLogin-CV4xfPjb.js",
+        "index-C6ergJYc.js"
       ]
     },
     "src\\components": {
       "path": "src\\components",
       "purpose": "UI components",
-      "fileCount": 8,
-      "lastAccessed": 1777338358007,
+      "fileCount": 10,
+      "lastAccessed": 1777425501989,
       "keyFiles": [
         "CustomizePanel.jsx",
         "Footer.jsx",
@@ -117,7 +127,7 @@
       "path": "src\\lib",
       "purpose": "Library code",
       "fileCount": 3,
-      "lastAccessed": 1777338358007,
+      "lastAccessed": 1777425501990,
       "keyFiles": [
         "animations.js",
         "supabase.js",
@@ -128,7 +138,7 @@
       "path": "src\\pages",
       "purpose": "Page components",
       "fileCount": 4,
-      "lastAccessed": 1777338358007,
+      "lastAccessed": 1777425501990,
       "keyFiles": [
         "Home.jsx",
         "V2HeroCanvas.jsx",
@@ -138,8 +148,8 @@
     "supabase\\migrations": {
       "path": "supabase\\migrations",
       "purpose": "Database migrations",
-      "fileCount": 3,
-      "lastAccessed": 1777338358008,
+      "fileCount": 4,
+      "lastAccessed": 1777425501991,
       "keyFiles": [
         "001_init.sql",
         "002_storage.sql",
@@ -149,52 +159,34 @@
   },
   "hotPaths": [
     {
-      "path": "src\\index.css",
-      "accessCount": 5,
-      "lastAccessed": 1777340091643,
-      "type": "file"
-    },
-    {
-      "path": "index.html",
-      "accessCount": 2,
-      "lastAccessed": 1777340040613,
-      "type": "file"
+      "path": "",
+      "accessCount": 1,
+      "lastAccessed": 1777426850023,
+      "type": "directory"
     },
     {
       "path": "src\\App.jsx",
       "accessCount": 1,
-      "lastAccessed": 1777344144646,
-      "type": "file"
-    },
-    {
-      "path": "",
-      "accessCount": 1,
-      "lastAccessed": 1777344145078,
+      "lastAccessed": 1777426850547,
       "type": "directory"
     },
     {
-      "path": "src\\components\\Sections.jsx",
+      "path": "src\\pages\\V2HeroCanvas.jsx",
       "accessCount": 1,
-      "lastAccessed": 1777344180309,
+      "lastAccessed": 1777426854160,
       "type": "file"
     },
     {
-      "path": "src\\components\\Navbar.jsx",
+      "path": "src\\locales\\th.js",
       "accessCount": 1,
-      "lastAccessed": 1777344180367,
-      "type": "file"
+      "lastAccessed": 1777426855162,
+      "type": "directory"
     },
     {
-      "path": "src\\components\\Hero.jsx",
+      "path": "src\\index.css",
       "accessCount": 1,
-      "lastAccessed": 1777344180415,
-      "type": "file"
-    },
-    {
-      "path": "src\\components\\CustomizePanel.jsx",
-      "accessCount": 1,
-      "lastAccessed": 1777344218326,
-      "type": "file"
+      "lastAccessed": 1777426856053,
+      "type": "directory"
     }
   ],
   "userDirectives": []

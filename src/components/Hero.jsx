@@ -55,7 +55,7 @@ export default function Hero({ tweak, onSoundClick }) {
           <span className="text-[#3d4956]">·</span>
           <span>IT Engineer</span>
         </motion.div>
-        <motion.div {...stagger(.3)} className="font-mono text-[clamp(14px,1.3vw,18px)] text-[#9aa7b4] max-w-2xl">
+        <motion.div {...stagger(.3)} className="font-mono text-[clamp(14px,1.3vw,18px)] text-[#9aa7b4] max-w-2xl w-full min-w-0 break-words">
           <span className="text-[#5d6b7a]">&gt;</span> <Typewriter strings={roles} mode={tweak.roleAnim} />
         </motion.div>
       </div>
@@ -64,7 +64,7 @@ export default function Hero({ tweak, onSoundClick }) {
       <div className="font-mono text-[clamp(18px,2.2vw,28px)] space-y-3 text-[#cfd6de]">
         <motion.div {...stagger(0)}><span className="text-[color:var(--accent)]">{t('hero.handle')}</span> {t('hero.whoami')}</motion.div>
         <motion.div {...stagger(.15)} className="text-[clamp(56px,12vw,180px)] font-bold leading-[.9] tracking-[-.04em] text-[#e8eef5]">{name}</motion.div>
-        <motion.div {...stagger(.3)}><span className="text-[#5d6b7a]">&gt;</span> <Typewriter strings={roles} mode={tweak.roleAnim} /></motion.div>
+        <motion.div {...stagger(.3)} className="w-full min-w-0 break-words"><span className="text-[#5d6b7a]">&gt;</span> <Typewriter strings={roles} mode={tweak.roleAnim} /></motion.div>
       </div>
     ),
     split: (
@@ -76,7 +76,7 @@ export default function Hero({ tweak, onSoundClick }) {
       <div className="space-y-6 max-w-3xl">
         <motion.div {...stagger(0)} className="font-mono text-[clamp(14px,1.2vw,15px)] text-[color:var(--accent)]">{t('hero.handle')} whoami</motion.div>
         <motion.div {...stagger(.15)} className="font-mono text-[clamp(56px,10vw,140px)] font-bold leading-[.9] tracking-[-.04em] text-[#e8eef5]">{name}</motion.div>
-        <motion.div {...stagger(.3)} className="font-mono text-[clamp(16px,1.6vw,22px)] text-[#9aa7b4]">
+        <motion.div {...stagger(.3)} className="font-mono text-[clamp(16px,1.6vw,22px)] text-[#9aa7b4] w-full min-w-0 break-words">
           <span className="text-[#5d6b7a]">&gt;</span> <Typewriter strings={roles} mode={tweak.roleAnim} />
         </motion.div>
       </div>

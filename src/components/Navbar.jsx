@@ -103,6 +103,7 @@ export function Navbar({ lang, setLang, tweak, onSoundClick }) {
     { key: 'nav.about', id: 'about' },
     { key: 'nav.skills', id: 'skills' },
     { key: 'nav.projects', id: 'projects' },
+    { key: 'nav.showcase', id: 'showcase' },
     { key: 'nav.experience', id: 'experience' },
     { key: 'nav.contact', id: 'contact' },
   ];
@@ -162,12 +163,6 @@ export function Navbar({ lang, setLang, tweak, onSoundClick }) {
 
         {/* Right controls */}
         <div className="flex items-center gap-2">
-          <a
-            href="/v2"
-            className="btn hidden sm:flex items-center gap-1.5 font-mono text-[11px] px-2.5 h-7 border border-[#1a2330] text-[#9aa7b4] hover:border-[color:var(--accent2)]/70 hover:text-[color:var(--accent2)] transition-colors"
-          >
-            V2
-          </a>
           {/* Lang toggle */}
           <button onClick={() => { onSoundClick?.(); setLang(lang === 'en' ? 'th' : 'en'); }}
             className="btn font-mono text-[11px] px-2.5 h-7 border border-[#1a2330] text-[#9aa7b4] hover:border-[color:var(--accent)]/60 hover:text-[color:var(--accent)] transition-colors">
@@ -214,9 +209,6 @@ export function Navbar({ lang, setLang, tweak, onSoundClick }) {
                   ↓ {t('nav.cv')}
                 </span>
               )}
-              <a href="/v2" className="font-mono text-[12px] text-[color:var(--accent2)] mt-1">
-                → V2 Landing
-              </a>
             </div>
           </motion.div>
         )}

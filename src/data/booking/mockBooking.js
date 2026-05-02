@@ -1,0 +1,68 @@
+export const services = [
+  {
+    id: 'haircut',
+    name_en: 'Hair Cut',
+    name_th: 'ตัดผม',
+    desc_en: 'Classic cut & style',
+    desc_th: 'ตัดและจัดทรง',
+    duration_en: '45 min',
+    duration_th: '45 นาที',
+    price: 350,
+    icon: 'content_cut',
+  },
+  {
+    id: 'color',
+    name_en: 'Hair Color',
+    name_th: 'ย้อมผม',
+    desc_en: 'Full color treatment',
+    desc_th: 'ย้อมสีเต็มรูปแบบ',
+    duration_en: '120 min',
+    duration_th: '120 นาที',
+    price: 1200,
+    icon: 'auto_awesome',
+  },
+  {
+    id: 'treatment',
+    name_en: 'Hair Treatment',
+    name_th: 'ทรีทเม้นท์',
+    desc_en: 'Deep conditioning',
+    desc_th: 'บำรุงเชิงลึก',
+    duration_en: '60 min',
+    duration_th: '60 นาที',
+    price: 800,
+    icon: 'air',
+  },
+  {
+    id: 'package',
+    name_en: 'Full Package',
+    name_th: 'แพ็กเกจครบ',
+    desc_en: 'Cut + color + treatment',
+    desc_th: 'ตัด + ย้อม + ทรีทเม้นท์',
+    duration_en: '180 min',
+    duration_th: '180 นาที',
+    price: 2000,
+    icon: 'star',
+  },
+];
+
+export const calendarConfig = {
+  year: 2025,
+  month: 1,
+  unavailableDays: [0],
+  defaultSelected: 19,
+};
+
+export const timeSlots = [
+  { id: '09:00', label: '09:00', booked: false },
+  { id: '09:30', label: '09:30', booked: false },
+  { id: '10:00', label: '10:00', booked: true },
+  { id: '10:30', label: '10:30', booked: false },
+  { id: '11:00', label: '11:00', booked: false },
+  { id: '11:30', label: '11:30', booked: true },
+  { id: '13:00', label: '13:00', booked: false },
+  { id: '13:30', label: '13:30', booked: false },
+  { id: '14:00', label: '14:00', booked: true },
+  { id: '14:30', label: '14:30', booked: false },
+  { id: '15:00', label: '15:00', booked: false },
+  { id: '16:00', label: '16:00', booked: false },
+];
