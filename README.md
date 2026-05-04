@@ -26,7 +26,16 @@ Live: [gun-portfolio.vercel.app](https://gun-portfolio.vercel.app) &nbsp;·&nbsp
 | Path | Description |
 |------|-------------|
 | `/` | Main portfolio — dark-tech design with topology canvas, glitch hero, customize panel |
-| `/v2` | V2 redesign — red/black palette, hexagonal canvas, HUD overlays |
+| `/demo/saas-dashboard` | Demo 01 — SaaS Analytics Dashboard |
+| `/demo/ecommerce-storefront` | Demo 02 — E-commerce Storefront |
+| `/demo/two-sided-marketplace` | Demo 03 — Two-sided Marketplace |
+| `/demo/crm-sales-pipeline` | Demo 04 — CRM / Sales Pipeline |
+| `/demo/booking-reservation` | Demo 05 — Booking & Reservation |
+| `/demo/lms-course-platform` | Demo 06 — LMS / Course Platform |
+| `/demo/personal-finance-tracker` | Demo 07 — Personal Finance Tracker |
+| `/demo/patient-portal` | Demo 08 — Patient Portal |
+| `/demo/logistics-live-tracking` | Demo 09 — Logistics / Live Tracking |
+| `/demo/social-community` | Demo 10 — Social / Community |
 | `/admin` | Admin dashboard (requires auth) |
 | `/admin/login` | Admin login |
 
@@ -40,6 +49,7 @@ Live: [gun-portfolio.vercel.app](https://gun-portfolio.vercel.app) &nbsp;·&nbsp
 - **Typewriter role** — 3 animation modes: typewriter / fade / terminal
 - **Topology canvas** — animated network graph background (desktop only)
 - **Customize UI panel** — visitors can tweak accent palette, bg pattern, hero style, density live
+- **Global theme/lang sync** — `gun_tweaks.theme` + `gun_tweaks.lang` are shared across `/` and all `/demo/*` routes
 - **Konami code** easter egg (`↑↑↓↓←→←→BA`)
 - **Crosshair cursor** + **terminal beep sounds** (opt-in)
 - **Bilingual** — EN / TH via i18n, persisted to localStorage
@@ -83,6 +93,13 @@ VITE_SUPABASE_ANON_KEY=eyJ...
 
 ---
 
+## Data Source Notes
+
+- **Main portfolio (`/`)**: Supabase-backed for profile/projects/experience/messages (with locale fallback if Supabase is not configured).
+- **Demo pages (`/demo/*`)**: mock data (frontend-only showcase; no backend required).
+
+---
+
 ## Project Structure
 
 ```
@@ -96,9 +113,16 @@ src/
 │   ├── Footer.jsx
 │   └── Skeleton.jsx
 ├── pages/
-│   ├── V2Landing.jsx       # /v2 — red/black redesign
-│   ├── V2HeroCanvas.jsx    # /v2 hero canvas (Three.js / hexagonal)
-│   ├── V2Loading.jsx       # /v2 GSAP loading screen
+│   ├── DashboardPage.jsx
+│   ├── EcommerceStorefrontPage.jsx
+│   ├── KradoMarketplacePage.jsx
+│   ├── PipelinePage.jsx
+│   ├── BookingPage.jsx
+│   ├── LearnlyPage.jsx
+│   ├── FinancePage.jsx
+│   ├── HealthPage.jsx
+│   ├── LogisticsPage.jsx
+│   ├── PulseHubPage.jsx
 │   └── admin/
 │       ├── AdminLogin.jsx
 │       └── AdminDashboard.jsx  # Profile / Projects / Experience / Messages tabs
@@ -111,7 +135,10 @@ src/
 ├── lib/
 │   ├── supabase.js
 │   ├── utils.js            # applyAccent, beep, useReveal, useKonami, useLiveStatus...
-│   └── gsap/v2Animations.js
+│   └── ...
+├── context/
+│   ├── globalTweak.js      # global theme/lang source of truth (gun_tweaks)
+│   └── ...                 # per-demo thin wrappers
 ├── locales/
 │   ├── en.js
 │   └── th.js
