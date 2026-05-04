@@ -7,7 +7,7 @@ const LangContext = createContext(null);
 export function LmsLangProvider({ children }) {
   const { lang, toggleLang } = useGlobalLangState();
 
-  const value = useMemo(() => ({ lang, toggleLang, tr: t[lang] }), [lang]);
+  const value = useMemo(() => ({ lang, toggleLang, tr: t[lang] }), [lang, toggleLang]);
   return <LangContext.Provider value={value}>{children}</LangContext.Provider>;
 }
 

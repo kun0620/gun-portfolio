@@ -18,14 +18,14 @@ export default function VitalsCard({ vitals }) {
         {vitals.map((vital) => (
           <div
             key={vital.id}
-            className="flex items-center justify-between rounded px-1.5 py-1 cursor-default"
+            className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1.5 rounded px-1.5 py-1 cursor-default"
             style={{ backgroundColor: isDark ? 'transparent' : '#F8FAFB' }}
           >
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 min-w-0">
               <span className="material-symbols-outlined text-[14px]" style={{ color: isDark ? '#888888' : '#617378' }}>{vital.icon}</span>
-              <span className="text-[13px]" style={{ color: isDark ? '#BCC9CD' : '#25383D' }}>{lang === 'en' ? vital.label_en : vital.label_th}</span>
+              <span className="text-[13px] break-words" style={{ color: isDark ? '#BCC9CD' : '#25383D' }}>{lang === 'en' ? vital.label_en : vital.label_th}</span>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 self-start sm:self-auto flex-wrap">
               <span className="text-[14px] font-semibold" style={{ color: isDark ? '#F0F0F0' : '#111111' }}>
                 {vital.value} {lang === 'en' ? vital.unit_en : vital.unit_th}
               </span>

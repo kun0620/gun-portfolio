@@ -17,15 +17,15 @@ export default function PatientCard({ patient }) {
         borderTopWidth: 2,
       }}
     >
-      <div className="flex items-center gap-4 mb-4">
+      <div className="flex items-center gap-4 mb-4 min-w-0">
         <div
           className="w-14 h-14 rounded-full border-2 border-cyan-500 grid place-items-center text-cyan-500 font-['Manrope'] font-bold text-[20px]"
           style={{ backgroundColor: isDark ? '#1A1A1A' : '#ECF4F5' }}
         >
           {patient.initials}
         </div>
-        <div>
-          <h1 className="font-['Manrope'] text-[17px] font-bold" style={{ color: isDark ? '#F0F0F0' : '#0D1B1F' }}>
+        <div className="min-w-0">
+          <h1 className="font-['Manrope'] text-[17px] font-bold break-words" style={{ color: isDark ? '#F0F0F0' : '#0D1B1F' }}>
             {lang === 'en' ? patient.name_en : patient.name_th}
           </h1>
           <p className="text-[12px]" style={{ color: isDark ? '#888888' : '#5A6A6F' }}>

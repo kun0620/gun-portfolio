@@ -1,12 +1,13 @@
-import { createContext, useContext } from 'react';
+import { createContext, useContext, useMemo } from 'react';
 import { useGlobalThemeState } from './globalTweak.js';
 
 const BookingThemeContext = createContext();
 
 export function BookingThemeProvider({ children }) {
   const { theme, toggleTheme } = useGlobalThemeState();
+  const value = useMemo(() => ({ theme, toggleTheme }), [theme, toggleTheme]);
 
-  return <BookingThemeContext.Provider value={{ theme, toggleTheme }}>{children}</BookingThemeContext.Provider>;
+  return <BookingThemeContext.Provider value={value}>{children}</BookingThemeContext.Provider>;
 }
 
 export const useBookingTheme = () => useContext(BookingThemeContext);

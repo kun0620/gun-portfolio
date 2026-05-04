@@ -6,7 +6,7 @@ const PulsehubThemeContext = createContext(null);
 export function PulsehubThemeProvider({ children }) {
   const { theme, toggleTheme } = useGlobalThemeState();
 
-  const value = useMemo(() => ({ theme, toggleTheme }), [theme]);
+  const value = useMemo(() => ({ theme, toggleTheme }), [theme, toggleTheme]);
   return <PulsehubThemeContext.Provider value={value}>{children}</PulsehubThemeContext.Provider>;
 }
 

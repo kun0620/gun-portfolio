@@ -7,7 +7,7 @@ const LogisticsLangContext = createContext(null);
 export function LogisticsLangProvider({ children }) {
   const { lang, toggleLang } = useGlobalLangState();
 
-  const value = useMemo(() => ({ lang, toggleLang, tr: logisticsTranslations[lang] }), [lang]);
+  const value = useMemo(() => ({ lang, toggleLang, tr: logisticsTranslations[lang] }), [lang, toggleLang]);
   return <LogisticsLangContext.Provider value={value}>{children}</LogisticsLangContext.Provider>;
 }
 

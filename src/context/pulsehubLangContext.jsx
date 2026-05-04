@@ -7,7 +7,7 @@ const PulsehubLangContext = createContext(null);
 export function PulsehubLangProvider({ children }) {
   const { lang, toggleLang } = useGlobalLangState();
 
-  const value = useMemo(() => ({ lang, toggleLang, tr: pulsehubTranslations[lang] }), [lang]);
+  const value = useMemo(() => ({ lang, toggleLang, tr: pulsehubTranslations[lang] }), [lang, toggleLang]);
   return <PulsehubLangContext.Provider value={value}>{children}</PulsehubLangContext.Provider>;
 }
 

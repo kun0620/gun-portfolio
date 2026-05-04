@@ -6,7 +6,7 @@ const ThemeContext = createContext(null);
 export function LmsThemeProvider({ children }) {
   const { theme, toggleTheme } = useGlobalThemeState();
 
-  const value = useMemo(() => ({ theme, toggleTheme }), [theme]);
+  const value = useMemo(() => ({ theme, toggleTheme }), [theme, toggleTheme]);
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
 }
 

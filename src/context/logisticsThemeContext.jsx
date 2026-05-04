@@ -6,7 +6,7 @@ const LogisticsThemeContext = createContext(null);
 export function LogisticsThemeProvider({ children }) {
   const { theme, toggleTheme } = useGlobalThemeState();
 
-  const value = useMemo(() => ({ theme, toggleTheme }), [theme]);
+  const value = useMemo(() => ({ theme, toggleTheme }), [theme, toggleTheme]);
   return <LogisticsThemeContext.Provider value={value}>{children}</LogisticsThemeContext.Provider>;
 }
 
